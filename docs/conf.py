@@ -17,10 +17,10 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'psychopy-template'
+project = 'psychopy-bbtk'
 copyright = '2022, Open Science Tools'
 author = 'Open Science Tools'
-repo = 'https://github.com/TEParsons/psychopy-template'
+repo = 'https://github.com/psychopy/psychopy-bbtk'
 
 
 # -- General configuration ---------------------------------------------------
