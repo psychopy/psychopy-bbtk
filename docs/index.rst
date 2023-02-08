@@ -3,16 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to psychopy-template's documentation!
+Welcome to psychopy-bbtk's documentation!
 ===========================================
 
-The `psychopy-template` plugin is designed to show you how to make a plugin.
+The `psychopy-bbtk` plugin provides a base class for serial BlackBox Toolkit devices. It includes some convenience methods to open
+ports and check for the expected device.
 
 .. toctree::
    :maxdepth: 2
    :caption: Library Components (API):
 
-   template_module
+   bbtk
 
 Indices and tables
 ==================
