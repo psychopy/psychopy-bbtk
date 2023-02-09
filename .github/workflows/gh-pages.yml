@@ -15,6 +15,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install furo  # furo theme for sphinx
+        pip install git+https://github.com/psychopy/psychopy-lib
         pip install .
     - name: Build and Commit
       uses: sphinx-notes/pages@v2
