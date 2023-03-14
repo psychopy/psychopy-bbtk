@@ -19,6 +19,7 @@ jobs:
         pip install git+https://github.com/psychopy/psychopy-lib --prefer-binary
 
     - name: Install self
+      runs: |
         pip install -e .
 
     - name: Build and Commit
