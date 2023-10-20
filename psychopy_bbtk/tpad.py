@@ -1,10 +1,8 @@
-from .. import serialdevice as sd, photodiode, button
+from psychopy.hardware import manager as mgr, serialdevice as sd, photodiode, button
+from psychopy import logging, layout
 from psychopy.tools import systemtools as st
-from psychopy import logging
 import serial
 import re
-
-from ... import layout
 
 # possible values for self.channel
 channelCodes = {
@@ -46,6 +44,83 @@ messageFormat = (
 
 def splitTPadMessage(message):
     return re.match(messageFormat, message).groups()
+
+
+class TPadManagerPlugin(mgr.DeviceManager):
+    """
+    Class which plugs in to DeviceManager and adds methods for managing BBTK TPad devices
+    """
+    @mgr.DeviceMethod("tpad", "add")
+    def addTPad(self, name=None, port=None, pauseDuration=1/240):
+        """
+        Add a BBTK TPad.
+
+        Parameters
+        ----------
+        name : str or None
+            Arbitrary name to refer to this TPad by. Use None to generate a unique name.
+        port : str, optional
+            COM port to which the TPad is conencted. Use None to search for port.
+        pauseDuration : int, optional
+            How long to wait after sending a serial command to the TPad
+
+        Returns
+        -------
+        TPad
+            TPad object.
+        """
+        # make unique name if none given
+        if name is None:
+            name = mgr.DeviceManager.makeUniqueName("tpad")
+        self._assertDeviceNameUnique(name)
+        # create and store TPad
+        self._devices['tpad'][name] = TPad(port=port, pauseDuration=pauseDuration)
+        # return created TPad
+        return self._devices['tpad'][name]
+
+    @mgr.DeviceMethod("tpad", "remove")
+    def removeTPad(self, name):
+        """
+        Remove a TPad.
+
+        Parameters
+        ----------
+        name : str
+            Name of the TPad.
+        """
+        del self._devices['tpad'][name]
+
+    @mgr.DeviceMethod("tpad", "get")
+    def getTPad(self, name):
+        """
+        Get a TPad by name.
+
+        Parameters
+        ----------
+        name : str
+            Arbitrary name given to the TPad when it was `add`ed.
+
+        Returns
+        -------
+        TPad
+            The requested TPad
+        """
+        return self._devices['tpad'].get(name, None)
+
+    @mgr.DeviceMethod("tpad", "getall")
+    def getTPads(self):
+        """
+        Get a mapping of TPads that have been initialized.
+
+        Returns
+        -------
+        dict
+            Dictionary of TPads that have been initialized. Where the keys
+            are the names of the keyboards and the values are the keyboard
+            objects.
+
+        """
+        return self._devices['tpad']
 
 
 class TPadPhotodiode(photodiode.BasePhotodiode):
@@ -139,7 +214,7 @@ class TPadVoicekey:
 
 
 class TPad(sd.SerialDevice):
-    def __init__(self, port=None, pauseDuration=1/30):
+    def __init__(self, port=None, pauseDuration=1/240):
         # get port if not given
         if port is None:
             port = self._detectComPort()
