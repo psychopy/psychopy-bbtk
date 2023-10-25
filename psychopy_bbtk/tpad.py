@@ -74,13 +74,7 @@ class TPadManagerPlugin(DeviceManager):
         if name is None:
             name = DeviceManager.makeUniqueName(self, "tpad")
         self._assertDeviceNameUnique(name)
-        # take note of ports already initialised
-        takenPorts = {dev.portString: nm for nm, dev in self.getTPads().items()}
-        # make/get device
-        if port not in takenPorts:
-            self._devices['tpad'][name] = TPadDevice(port=port, pauseDuration=pauseDuration)
-        else:
-            self._devices['tpad'][name] = takenPorts[port]
+        self._devices['tpad'][name] = TPadDevice(port=port, pauseDuration=pauseDuration, baudrate=115200)
         # return created TPad
         return self._devices['tpad'][name]
 
@@ -256,7 +250,7 @@ class TPad:
     def __init__(self, name=None, port=None, pauseDuration=1/240):
         # get port if not given
         if port is None:
-            port = self._detectComPort()
+            port = self._detectComPort()[0]
         # get/make device
         if deviceManager.checkDeviceNameAvailable(name):
             # if no matching device is in DeviceManager, make a new one
@@ -312,24 +306,9 @@ class TPad:
         for node in self.nodes:
             node.addListener(listener)
 
-    def setMode(self, mode):
-        # dispatch messages now to clear buffer
-        self.dispatchMessages()
-        # exit out of whatever mode we're in (effectively set it to 0)
-        try:
-            self.device.sendMessage("X")
-            self.device.pause()
-        except serial.serialutil.SerialException:
-            pass
-        # set mode
-        self.device.sendMessage(f"MOD{mode}")
-        self.device.pause()
-        # clear messages
-        self.device.getResponse()
-
     def resetTimer(self, clock=logging.defaultClock):
         # enter settings mode
-        self.setMode(0)
+        self.device.setMode(0)
         # send reset command
         self.device.sendMessage(f"REST")
         # store time
@@ -337,17 +316,7 @@ class TPad:
         # allow time to process
         self.device.pause()
         # reset mode
-        self.setMode(3)
-
-    def isAwake(self):
-        self.setMode(0)
-        # call help and get response
-        self.device.sendMessage("HELP")
-        resp = self.device.getResponse()
-        # set to mode 3
-        self.setMode(3)
-
-        return bool(resp)
+        self.device.setMode(3)
 
     def dispatchMessages(self, timeout=None):
         # if timeout is None, use pause duration
@@ -355,7 +324,7 @@ class TPad:
             timeout = self.device.pauseDuration
         # get data from box
         self.device.pause()
-        data = sd.SerialDevice.getResponse(self.device, length=2, timeout=timeout)
+        data = self.device.getResponse(length=2, timeout=timeout)
         self.device.pause()
         # parse lines
         for line in data:
@@ -385,16 +354,50 @@ class TPad:
 
     def calibratePhotodiode(self, level=127):
         # set to mode 0
-        self.setMode(0)
+        self.device.setMode(0)
         # call help and get response
         self.device.sendMessage(f"AAO1 {level}")
         self.device.sendMessage(f"AAO2 {level}")
         self.device.getResponse()
         # set to mode 3
-        self.setMode(3)
+        self.device.setMode(3)
 
 
 class TPadDevice(sd.SerialDevice, base.BaseDevice):
-    def __init__(self, port=None, pauseDuration=1/240):
-        # initialise as a SerialDevice
-        sd.SerialDevice.__init__(self, port=port, baudrate=115200, pauseDuration=pauseDuration)
+    def setMode(self, mode):
+        print(f"setMode({mode})[")
+        self.getResponse()
+        # exit out of whatever mode we're in (effectively set it to 0)
+        self.sendMessage("X")
+        self.pause()
+        # set mode
+        self.sendMessage(f"MOD{mode}")
+        self.pause()
+        # clear messages
+        self.getResponse()
+        print("]")
+
+    def isAwake(self):
+        print("isAwake[")
+        self.setMode(0)
+        self.pause()
+        # call help and get response
+        self.sendMessage("HELP")
+        self.pause()  # or response won't be ready
+        resp = self.getResponse()  # get all chars (a usage message)
+        # set to mode 3
+        self.setMode(3)
+        print("]")
+        return bool(resp)
+
+    def resetTimer(self, clock=logging.defaultClock):
+        # enter settings mode
+        self.setMode(0)
+        # send reset command
+        self.sendMessage(f"REST")
+        # store time
+        self._lastTimerReset = clock.getTime(format=float)
+        # allow time to process
+        self.pause()
+        # reset mode
+        self.setMode(3)
