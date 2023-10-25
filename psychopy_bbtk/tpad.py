@@ -318,13 +318,10 @@ class TPad:
         # reset mode
         self.device.setMode(3)
 
-    def dispatchMessages(self, timeout=None):
-        # if timeout is None, use pause duration
-        if timeout is None:
-            timeout = self.device.pauseDuration
+    def dispatchMessages(self):
         # get data from box
         self.device.pause()
-        data = self.device.getResponse(length=2, timeout=timeout)
+        data = self.device.getResponse(length=2)
         self.device.pause()
         # parse lines
         for line in data:
