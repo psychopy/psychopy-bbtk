@@ -365,7 +365,6 @@ class TPad:
 
 class TPadDevice(sd.SerialDevice, base.BaseDevice):
     def setMode(self, mode):
-        print(f"setMode({mode})[")
         self.getResponse()
         # exit out of whatever mode we're in (effectively set it to 0)
         self.sendMessage("X")
@@ -375,10 +374,8 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
         self.pause()
         # clear messages
         self.getResponse()
-        print("]")
 
     def isAwake(self):
-        print("isAwake[")
         self.setMode(0)
         self.pause()
         # call help and get response
@@ -387,7 +384,6 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
         resp = self.getResponse()  # get all chars (a usage message)
         # set to mode 3
         self.setMode(3)
-        print("]")
         return bool(resp)
 
     def resetTimer(self, clock=logging.defaultClock):
