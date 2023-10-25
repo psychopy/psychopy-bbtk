@@ -74,8 +74,13 @@ class TPadManagerPlugin(DeviceManager):
         if name is None:
             name = DeviceManager.makeUniqueName(self, "tpad")
         self._assertDeviceNameUnique(name)
-        # create and store TPad
-        self._devices['tpad'][name] = TPadDevice(port=port, pauseDuration=pauseDuration)
+        # take note of ports already initialised
+        takenPorts = {dev.portString: nm for nm, dev in self.getTPads().items()}
+        # make/get device
+        if port not in takenPorts:
+            self._devices['tpad'][name] = TPadDevice(port=port, pauseDuration=pauseDuration)
+        else:
+            self._devices['tpad'][name] = takenPorts[port]
         # return created TPad
         return self._devices['tpad'][name]
 
@@ -133,17 +138,33 @@ class TPadManagerPlugin(DeviceManager):
         dict
             Dictionary of information about available TPads connected to the system.
         """
+
+        # error to raise if this fails
+        err = ConnectionError(
+            "Could not detect COM port for TPad device. Try supplying a COM port directly."
+        )
+
         foundDevices = []
         # look for all serial devices
-        for device in st.systemProfilerWindowsOS(connected=True, classname="Ports"):
+        for profile in st.systemProfilerWindowsOS(connected=True, classname="Ports"):
             # skip non-TPads
-            if "BBTKTPAD" not in device['Instance ID']:
+            if "BBTKTPAD" not in profile['Instance ID']:
                 continue
-            # get port
-            port = device['Device Description'].split("(")[1].split(")")[0]
+            # find "COM" in profile description
+            desc = profile['Device Description']
+            start = desc.find("COM") + 3
+            end = desc.find(")", start)
+            # if there's no reference to a COM port, fail
+            if -1 in (start, end):
+                raise err
+            # get COM port number
+            num = desc[start:end]
+            # if COM port number doesn't look numeric, fail
+            if not num.isnumeric():
+                raise err
             # append
             foundDevices.append(
-                {'port': port}
+                {'port': f"COM{num}"}
             )
 
         return foundDevices
@@ -266,35 +287,15 @@ class TPad:
 
     @staticmethod
     def _detectComPort():
-        # error to raise if this fails
-        err = ConnectionError(
-            "Could not detect COM port for TPad device. Try supplying a COM port directly."
-        )
-        # get device profiles matching what we expect of a TPad
-        profiles = st.systemProfilerWindowsOS(connected=True, classname="Ports")
-
-        # find which port has FTDI
-        profile = None
-        for prf in profiles:
-            if prf['Manufacturer Name'] == "FTDI":
-                profile = prf
-        # if none found, fail
-        if not profile:
-            raise err
-        # find "COM" in profile description
-        desc = profile['Device Description']
-        start = desc.find("COM") + 3
-        end = desc.find(")", start)
-        # if there's no reference to a COM port, fail
-        if -1 in (start, end):
-            raise err
-        # get COM port number
-        num = desc[start:end]
-        # if COM port number doesn't look numeric, fail
-        if not num.isnumeric():
-            raise err
-        # construct COM port string
-        return f"COM{num}"
+        # find available devices
+        available = deviceManager.getAvailableTPadDevices()
+        # error if there are none
+        if not available:
+            raise ConnectionError(
+                "Could not find any TPad."
+            )
+        # get all available ports
+        return [profile['port'] for profile in available]
 
     def addListener(self, listener):
         """
