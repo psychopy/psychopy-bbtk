@@ -176,6 +176,8 @@ class TPadPhotodiode(photodiode.BasePhotodiode):
         photodiode.BasePhotodiode.__init__(self, pad)
         # store number
         self.number = number
+        # store device
+        self.device = self.parent.device
 
     def setThreshold(self, threshold):
         self._threshold = threshold
@@ -221,7 +223,7 @@ class TPadPhotodiode(photodiode.BasePhotodiode):
 class TPadButton(button.BaseButton):
     def __init__(self, pad, number):
         # initialise base class
-        button.BaseButton.__init__(self, device=pad)
+        button.BaseButton.__init__(self, parent=pad)
         # store number
         self.number = number
 
