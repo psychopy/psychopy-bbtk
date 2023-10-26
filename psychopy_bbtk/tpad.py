@@ -102,7 +102,7 @@ class TPadManagerPlugin(DeviceManager):
 
         Returns
         -------
-        TPad
+        TPadDevice
             The requested TPad
         """
         return self._devices['tpad'].get(name, None)
@@ -163,6 +163,49 @@ class TPadManagerPlugin(DeviceManager):
 
         return foundDevices
 
+    @DeviceMethod("tpad")
+    def getTPadPhotodiode(self, name, number):
+        pad = self.getTPad(name=name)
+
+        return pad.photodiodes[number]
+
+    @DeviceMethod("tpad")
+    def getTPadButton(self, name, number):
+        pad = self.getTPad(name=name)
+
+        return pad.buttons[number]
+
+    @DeviceMethod("tpad")
+    def configurePhotodiode(self, name, number, threshold=None, pos=None, size=None, units=None):
+        """
+        Configure a photodiode attached to a TPad object.
+
+        Parameters
+        ----------
+        name : _type_
+            _description_
+        number : _type_
+            _description_
+        threshold : _type_, optional
+            _description_, by default None
+        pos : _type_, optional
+            _description_, by default None
+        size : _type_, optional
+            _description_, by default None
+        units : _type_, optional
+            _description_, by default None
+
+        Returns
+        -------
+        _type_
+            _description_
+
+        Raises
+        ------
+        ConnectionError
+            _description_
+        """
+
 
 class TPadPhotodiode(photodiode.BasePhotodiode):
     def __init__(self, pad, number):
@@ -170,15 +213,13 @@ class TPadPhotodiode(photodiode.BasePhotodiode):
         photodiode.BasePhotodiode.__init__(self, pad)
         # store number
         self.number = number
-        # store device
-        self.device = self.parent.device
 
     def setThreshold(self, threshold):
         self._threshold = threshold
-        self.device.setMode(0)
-        self.device.sendMessage(f"AAO{self.number} {threshold}")
-        self.device.pause()
-        self.device.setMode(3)
+        self.parent.setMode(0)
+        self.parent.sendMessage(f"AAO{self.number} {threshold}")
+        self.parent.pause()
+        self.parent.setMode(3)
 
     def parseMessage(self, message):
         # if given a string, split according to regex
@@ -208,10 +249,17 @@ class TPadPhotodiode(photodiode.BasePhotodiode):
 
     def findPhotodiode(self, win):
         # set mode to 3
-        self.device.setMode(3)
-        self.device.pause()
+        self.parent.setMode(3)
+        self.parent.pause()
         # continue as normal
         return photodiode.BasePhotodiode.findPhotodiode(self, win)
+
+    def findThreshold(self, win):
+        # set mode to 3
+        self.parent.setMode(3)
+        self.parent.pause()
+        # continue as normal
+        return photodiode.BasePhotodiode.findThreshold(self, win)
 
 
 class TPadButton(button.BaseButton):
@@ -248,9 +296,6 @@ class TPadVoicekey:
 
 class TPad:
     def __init__(self, name=None, port=None, pauseDuration=1/240):
-        # get port if not given
-        if port is None:
-            port = self._detectComPort()[0]
         # get/make device
         if deviceManager.checkDeviceNameAvailable(name):
             # if no matching device is in DeviceManager, make a new one
@@ -261,37 +306,50 @@ class TPad:
             # otherwise, use the existing device
             self.device = deviceManager.getTPad(name)
 
-        # dict of responses by timestamp
-        self.messages = {}
-        # inputs
+    def addListener(self, listener):
+        self.device.addListener(listener=listener)
+
+    def dispatchMessages(self):
+        self.device.dispatchMessages()
+
+    def setMode(self, mode):
+        self.device.setMode(mode=mode)
+
+    def resetTimer(self, clock=logging.defaultClock):
+        self.device.resetTimer(clock=clock)
+
+
+class TPadDevice(sd.SerialDevice, base.BaseDevice):
+    def __init__(
+            self, port=None, baudrate=9600,
+            byteSize=8, stopBits=1,
+            parity="N",  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
+            eol=b"\n",
+            maxAttempts=1, pauseDuration=0.1,
+            checkAwake=True
+    ):
+        # get port if not given
+        if port is None:
+            port = self._detectComPort()[0]
+        # initialise serial
+        sd.SerialDevice.__init__(
+            self, port=port, baudrate=baudrate,
+            byteSize=byteSize, stopBits=stopBits,
+            parity=parity,  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
+            eol=eol,
+            maxAttempts=maxAttempts, pauseDuration=pauseDuration,
+            checkAwake=checkAwake
+        )
+        # nodes
         self.photodiodes = {i + 1: TPadPhotodiode(self, i + 1) for i in range(2)}
         self.buttons = {i + 1: TPadButton(self, i + 1) for i in range(10)}
         self.voicekeys = {i + 1: TPadVoicekey(self, i + 1) for i in range(1)}
+
+        # dict of responses by timestamp
+        self.messages = {}
         # reset timer
         self._lastTimerReset = None
         self.resetTimer()
-
-    @property
-    def nodes(self):
-        """
-        Returns
-        -------
-        list
-            List of nodes (photodiodes, buttons and voicekeys) managed by this TPad.
-        """
-        return list(self.photodiodes.values()) + list(self.buttons.values()) + list(self.voicekeys.values())
-
-    @staticmethod
-    def _detectComPort():
-        # find available devices
-        available = deviceManager.getAvailableTPadDevices()
-        # error if there are none
-        if not available:
-            raise ConnectionError(
-                "Could not find any TPad."
-            )
-        # get all available ports
-        return [profile['port'] for profile in available]
 
     def addListener(self, listener):
         """
@@ -306,23 +364,11 @@ class TPad:
         for node in self.nodes:
             node.addListener(listener)
 
-    def resetTimer(self, clock=logging.defaultClock):
-        # enter settings mode
-        self.device.setMode(0)
-        # send reset command
-        self.device.sendMessage(f"REST")
-        # store time
-        self._lastTimerReset = clock.getTime(format=float)
-        # allow time to process
-        self.device.pause()
-        # reset mode
-        self.device.setMode(3)
-
     def dispatchMessages(self):
         # get data from box
-        self.device.pause()
-        data = self.device.getResponse(length=2)
-        self.device.pause()
+        self.pause()
+        data = self.getResponse(length=2)
+        self.pause()
         # parse lines
         for line in data:
             if re.match(messageFormat, line):
@@ -349,18 +395,28 @@ class TPad:
                     message = node.parseMessage(parts)
                     node.receiveMessage(message)
 
-    def calibratePhotodiode(self, level=127):
-        # set to mode 0
-        self.device.setMode(0)
-        # call help and get response
-        self.device.sendMessage(f"AAO1 {level}")
-        self.device.sendMessage(f"AAO2 {level}")
-        self.device.getResponse()
-        # set to mode 3
-        self.device.setMode(3)
+    @staticmethod
+    def _detectComPort():
+        # find available devices
+        available = deviceManager.getAvailableTPadDevices()
+        # error if there are none
+        if not available:
+            raise ConnectionError(
+                "Could not find any TPad."
+            )
+        # get all available ports
+        return [profile['port'] for profile in available]
 
+    @property
+    def nodes(self):
+        """
+        Returns
+        -------
+        list
+            List of nodes (photodiodes, buttons and voicekeys) managed by this TPad.
+        """
+        return list(self.photodiodes.values()) + list(self.buttons.values()) + list(self.voicekeys.values())
 
-class TPadDevice(sd.SerialDevice, base.BaseDevice):
     def setMode(self, mode):
         self.getResponse()
         # exit out of whatever mode we're in (effectively set it to 0)
