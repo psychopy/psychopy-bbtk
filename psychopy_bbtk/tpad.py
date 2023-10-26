@@ -182,29 +182,33 @@ class TPadManagerPlugin(DeviceManager):
 
         Parameters
         ----------
-        name : _type_
-            _description_
-        number : _type_
-            _description_
-        threshold : _type_, optional
-            _description_, by default None
-        pos : _type_, optional
-            _description_, by default None
-        size : _type_, optional
-            _description_, by default None
-        units : _type_, optional
-            _description_, by default None
-
-        Returns
-        -------
-        _type_
-            _description_
-
-        Raises
-        ------
-        ConnectionError
-            _description_
+        name : str
+            Name of the TPad whose photodiode to configure
+        number : int
+            Number of the photodiode to configure
+        threshold : int, optional
+            Light threshold to set the photodiode to, or leave as None for no change.
+        pos : list, tuple, np.ndarray, layout.Position, optional
+            Position of the photodiode on the current window, or leave as None for no change.
+        size : list, tuple, np.ndarray, layout.Size, optional
+            Size of the rectangle picked up by the photodiode, or leave as None for no change.
+        units : str, optional
+            Units in which to interpret pos and size, or leave as None for no change.
         """
+        # get diode
+        diode = self.getTPadPhotodiode(name=name, number=number)
+        # set threshold
+        if threshold is not None:
+            diode.setThreshold(threshold)
+        # set units
+        if units is not None:
+            diode.units = units
+        # set pos
+        if pos is not None:
+            diode.pos = pos
+        # set size
+        if size is not None:
+            diode.size = size
 
 
 class TPadPhotodiode(photodiode.BasePhotodiode):
