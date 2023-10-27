@@ -47,170 +47,6 @@ def splitTPadMessage(message):
     return re.match(messageFormat, message).groups()
 
 
-class TPadManagerPlugin(DeviceManager):
-    """
-    Class which plugs in to DeviceManager and adds methods for managing BBTK TPad devices
-    """
-    @DeviceMethod("tpad", "add")
-    def addTPad(self, name=None, port=None, pauseDuration=1/240):
-        """
-        Add a BBTK TPad.
-
-        Parameters
-        ----------
-        name : str or None
-            Arbitrary name to refer to this TPad by. Use None to generate a unique name.
-        port : str, optional
-            COM port to which the TPad is conencted. Use None to search for port.
-        pauseDuration : int, optional
-            How long to wait after sending a serial command to the TPad
-
-        Returns
-        -------
-        TPad
-            TPad object.
-        """
-        # make unique name if none given
-        if name is None:
-            name = DeviceManager.makeUniqueName(self, "tpad")
-        self._assertDeviceNameUnique(name)
-        self._devices['tpad'][name] = TPadDevice(port=port, pauseDuration=pauseDuration, baudrate=115200)
-        # return created TPad
-        return self._devices['tpad'][name]
-
-    @DeviceMethod("tpad", "remove")
-    def removeTPad(self, name):
-        """
-        Remove a TPad.
-
-        Parameters
-        ----------
-        name : str
-            Name of the TPad.
-        """
-        del self._devices['tpad'][name]
-
-    @DeviceMethod("tpad", "get")
-    def getTPad(self, name):
-        """
-        Get a TPad by name.
-
-        Parameters
-        ----------
-        name : str
-            Arbitrary name given to the TPad when it was `add`ed.
-
-        Returns
-        -------
-        TPadDevice
-            The requested TPad
-        """
-        return self._devices['tpad'].get(name, None)
-
-    @DeviceMethod("tpad", "getall")
-    def getTPads(self):
-        """
-        Get a mapping of TPads that have been initialized.
-
-        Returns
-        -------
-        dict
-            Dictionary of TPads that have been initialized. Where the keys
-            are the names of the keyboards and the values are the keyboard
-            objects.
-
-        """
-        return self._devices['tpad']
-
-    @DeviceMethod("tpad", "available")
-    def getAvailableTPads(self):
-        """
-        Get details of all available TPad devices.
-
-        Returns
-        -------
-        dict
-            Dictionary of information about available TPads connected to the system.
-        """
-
-        # error to raise if this fails
-        err = ConnectionError(
-            "Could not detect COM port for TPad device. Try supplying a COM port directly."
-        )
-
-        foundDevices = []
-        # look for all serial devices
-        for profile in st.systemProfilerWindowsOS(connected=True, classname="Ports"):
-            # skip non-TPads
-            if "BBTKTPAD" not in profile['Instance ID']:
-                continue
-            # find "COM" in profile description
-            desc = profile['Device Description']
-            start = desc.find("COM") + 3
-            end = desc.find(")", start)
-            # if there's no reference to a COM port, fail
-            if -1 in (start, end):
-                raise err
-            # get COM port number
-            num = desc[start:end]
-            # if COM port number doesn't look numeric, fail
-            if not num.isnumeric():
-                raise err
-            # append
-            foundDevices.append(
-                {'port': f"COM{num}"}
-            )
-
-        return foundDevices
-
-    @DeviceMethod("tpad")
-    def getTPadPhotodiode(self, name, number):
-        pad = self.getTPad(name=name)
-
-        return pad.photodiodes[number]
-
-    @DeviceMethod("tpad")
-    def getTPadButton(self, name, number):
-        pad = self.getTPad(name=name)
-
-        return pad.buttons[number]
-
-    @DeviceMethod("tpad")
-    def configurePhotodiode(self, name, number, threshold=None, pos=None, size=None, units=None):
-        """
-        Configure a photodiode attached to a TPad object.
-
-        Parameters
-        ----------
-        name : str
-            Name of the TPad whose photodiode to configure
-        number : int
-            Number of the photodiode to configure
-        threshold : int, optional
-            Light threshold to set the photodiode to, or leave as None for no change.
-        pos : list, tuple, np.ndarray, layout.Position, optional
-            Position of the photodiode on the current window, or leave as None for no change.
-        size : list, tuple, np.ndarray, layout.Size, optional
-            Size of the rectangle picked up by the photodiode, or leave as None for no change.
-        units : str, optional
-            Units in which to interpret pos and size, or leave as None for no change.
-        """
-        # get diode
-        diode = self.getTPadPhotodiode(name=name, number=number)
-        # set threshold
-        if threshold is not None:
-            diode.setThreshold(threshold)
-        # set units
-        if units is not None:
-            diode.units = units
-        # set pos
-        if pos is not None:
-            diode.pos = pos
-        # set size
-        if size is not None:
-            diode.size = size
-
-
 class TPadPhotodiode(photodiode.BasePhotodiode):
     def __init__(self, pad, number):
         # initialise base class
@@ -301,7 +137,7 @@ class TPadVoicekey:
 class TPad:
     def __init__(self, name=None, port=None, pauseDuration=1/240):
         # get/make device
-        if deviceManager.checkDeviceNameAvailable(name):
+        if name in DeviceManager.devices:
             # if no matching device is in DeviceManager, make a new one
             self.device = deviceManager.addTPad(
                 name=name, port=port, pauseDuration=pauseDuration
@@ -454,3 +290,8 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
         self.pause()
         # reset mode
         self.setMode(3)
+
+
+# register some aliases for the TPadDevice class with DeviceManager
+DeviceManager.registerAlias("tpad", deviceClass="psychopy_bbtk.tpad.TPadDevice")
+DeviceManager.registerAlias("psychopy_bbtk.tpad.TPad", deviceClass="psychopy_bbtk.tpad.TPadDevice")
