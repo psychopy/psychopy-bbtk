@@ -56,7 +56,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             pad = DeviceManager.getDevice(pad)
             # if failed, try getting by port
             if pad is None:
-                pad = DeviceManager.getDeviceBy("port", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
+                pad = DeviceManager.getDeviceBy("portString", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
         # if still failed, make one
         if pad is None:
             pad = DeviceManager.addDevice(
@@ -164,7 +164,7 @@ class TPadVoicekey:
 
 class TPad(sd.SerialDevice, base.BaseDevice):
     def __init__(
-            self, port=None, baudrate=9600,
+            self, port=None, baudrate=115200,
             byteSize=8, stopBits=1,
             parity="N",  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
             eol=b"\n",
