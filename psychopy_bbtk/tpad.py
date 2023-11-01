@@ -1,5 +1,5 @@
 from psychopy.hardware import base, serialdevice as sd, photodiode, button
-from psychopy.hardware.manager import deviceManager, DeviceManager, DeviceMethod
+from psychopy.hardware.manager import deviceManager, DeviceManager
 from psychopy import logging, layout
 from psychopy.tools import systemtools as st
 import serial
@@ -47,12 +47,40 @@ def splitTPadMessage(message):
     return re.match(messageFormat, message).groups()
 
 
-class TPadPhotodiode(photodiode.BasePhotodiode):
-    def __init__(self, pad, number):
+class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
+    def __init__(self, pad, channels):
+        _requestedPad = pad
+        # try to get associated tpad
+        if isinstance(_requestedPad, str):
+            # try getting by name
+            pad = DeviceManager.getDevice(pad)
+            # if failed, try getting by port
+            if pad is None:
+                pad = DeviceManager.getDeviceBy("port", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
+        # if still failed, make one
+        if pad is None:
+            pad = DeviceManager.addDevice(
+                deviceClass="psychopy_bbtk.tpad.TPad",
+                deviceName=_requestedPad,
+                port=_requestedPad
+            )
+
+        # reference self in pad
+        pad.photodiodes = self
         # initialise base class
-        photodiode.BasePhotodiode.__init__(self, pad)
-        # store number
-        self.number = number
+        photodiode.BasePhotodiodeGroup.__init__(self, pad, channels=channels)
+
+    @staticmethod
+    def getAvailableDevices():
+        devices = []
+        # iterate through profiles of all serial port devices
+        for dev in TPad.getAvailableDevices():
+            devices.append({
+                'pad': dev['port'],
+                'channels': 2,
+            })
+
+        return devices
 
     def setThreshold(self, threshold):
         self._threshold = threshold
@@ -134,32 +162,7 @@ class TPadVoicekey:
         pass
 
 
-class TPad:
-    def __init__(self, name=None, port=None, pauseDuration=1/240):
-        # get/make device
-        if name in DeviceManager.devices:
-            # if no matching device is in DeviceManager, make a new one
-            self.device = deviceManager.addTPad(
-                name=name, port=port, pauseDuration=pauseDuration
-            )
-        else:
-            # otherwise, use the existing device
-            self.device = deviceManager.getTPad(name)
-
-    def addListener(self, listener):
-        self.device.addListener(listener=listener)
-
-    def dispatchMessages(self):
-        self.device.dispatchMessages()
-
-    def setMode(self, mode):
-        self.device.setMode(mode=mode)
-
-    def resetTimer(self, clock=logging.defaultClock):
-        self.device.resetTimer(clock=clock)
-
-
-class TPadDevice(sd.SerialDevice, base.BaseDevice):
+class TPad(sd.SerialDevice, base.BaseDevice):
     def __init__(
             self, port=None, baudrate=9600,
             byteSize=8, stopBits=1,
@@ -181,15 +184,39 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
             checkAwake=checkAwake
         )
         # nodes
-        self.photodiodes = {i + 1: TPadPhotodiode(self, i + 1) for i in range(2)}
-        self.buttons = {i + 1: TPadButton(self, i + 1) for i in range(10)}
-        self.voicekeys = {i + 1: TPadVoicekey(self, i + 1) for i in range(1)}
+        self.nodes = []
 
         # dict of responses by timestamp
         self.messages = {}
         # reset timer
         self._lastTimerReset = None
         self.resetTimer()
+
+    @staticmethod
+    def getAvailableDevices():
+        devices = []
+        # iterate through profiles of all serial port devices
+        for profile in st.systemProfilerWindowsOS(
+            classid="{4d36e978-e325-11ce-bfc1-08002be10318}",
+        ):
+            # skip non-bbtk profiles
+            if "BBTKTPAD" not in profile['Instance ID']:
+                continue
+            # find "COM" in profile description
+            desc = profile['Device Description']
+            start = desc.find("COM") + 3
+            end = desc.find(")", start)
+            # if there's no reference to a COM port, skip
+            if -1 in (start, end):
+                continue
+            # get COM port number
+            num = desc[start:end]
+
+            devices.append({
+                'port': f"COM{num}",
+            })
+
+        return devices
 
     def addListener(self, listener):
         """
@@ -213,32 +240,34 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
         for line in data:
             if re.match(messageFormat, line):
                 # if line fits format, split into attributes
-                channel, state, number, time = splitTPadMessage(line)
+                device, state, channel, time = splitTPadMessage(line)
                 # integerise number
-                number = int(number)
+                channel = int(channel)
                 # get time in s using defaultClock units
                 time = float(time) / 1000 + self._lastTimerReset
                 # store in array
-                parts = (channel, state, button, time)
+                parts = (device, state, button, time)
                 # store message
                 self.messages[time] = line
                 # choose object to dispatch to
-                node = None
-                if channel == "A" and number in self.buttons:
-                    node = self.buttons[number]
-                if channel == "C" and number in self.photodiodes:
-                    node = self.photodiodes[number]
-                if channel == "M" and number in self.voicekeys:
-                    node = self.voicekeys[number]
-                # dispatch to node
-                if node is not None:
+                for node in self.nodes:
+                    # if device is A, dispatch only to buttons
+                    if device == "A" and not isinstance(node, TPadButton):
+                        continue
+                    # if device is C, dispatch only to photodiodes
+                    if device == "C" and not isinstance(node, TPadPhotodiodeGroup):
+                        continue
+                    # if device is M, dispatch only to voice keys
+                    if device == "M" and not isinstance(node, TPadVoicekey):
+                        continue
+                    # dispatch to node
                     message = node.parseMessage(parts)
                     node.receiveMessage(message)
 
     @staticmethod
     def _detectComPort():
         # find available devices
-        available = deviceManager.getAvailableTPadDevices()
+        available = TPad.getAvailableDevices()
         # error if there are none
         if not available:
             raise ConnectionError(
@@ -246,16 +275,6 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
             )
         # get all available ports
         return [profile['port'] for profile in available]
-
-    @property
-    def nodes(self):
-        """
-        Returns
-        -------
-        list
-            List of nodes (photodiodes, buttons and voicekeys) managed by this TPad.
-        """
-        return list(self.photodiodes.values()) + list(self.buttons.values()) + list(self.voicekeys.values())
 
     def setMode(self, mode):
         self.getResponse()
@@ -292,6 +311,5 @@ class TPadDevice(sd.SerialDevice, base.BaseDevice):
         self.setMode(3)
 
 
-# register some aliases for the TPadDevice class with DeviceManager
-DeviceManager.registerAlias("tpad", deviceClass="psychopy_bbtk.tpad.TPadDevice")
-DeviceManager.registerAlias("psychopy_bbtk.tpad.TPad", deviceClass="psychopy_bbtk.tpad.TPadDevice")
+# register some aliases for the TPad class with DeviceManager
+DeviceManager.registerAlias("tpad", deviceClass="psychopy_bbtk.tpad.TPad")
