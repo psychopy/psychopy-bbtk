@@ -85,8 +85,9 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
     def setThreshold(self, threshold):
         self._threshold = threshold
         self.parent.setMode(0)
-        self.parent.sendMessage(f"AAO{self.number} {threshold}")
-        self.parent.pause()
+        for n in range(self.channels):
+            self.parent.sendMessage(f"AAO{n} {threshold}")
+            self.parent.pause()
         self.parent.setMode(3)
 
     def parseMessage(self, message):
@@ -120,14 +121,14 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiode.findPhotodiode(self, win)
+        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win)
 
     def findThreshold(self, win):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiode.findThreshold(self, win)
+        return photodiode.BasePhotodiodeGroup.findThreshold(self, win)
 
 
 class TPadButton(button.BaseButton):
