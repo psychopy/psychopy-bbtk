@@ -66,7 +66,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             )
 
         # reference self in pad
-        pad.photodiodes = self
+        pad.nodes.append(self)
         # initialise base class
         photodiode.BasePhotodiodeGroup.__init__(self, pad, channels=channels)
 
@@ -82,10 +82,10 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         return devices
 
-    def setThreshold(self, threshold):
+    def setThreshold(self, threshold, channels=(1, 2)):
         self._threshold = threshold
         self.parent.setMode(0)
-        for n in range(self.channels):
+        for n in channels:
             self.parent.sendMessage(f"AAO{n} {threshold}")
             self.parent.pause()
         self.parent.setMode(3)
@@ -116,19 +116,19 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         return resp
 
-    def findPhotodiode(self, win):
+    def findPhotodiode(self, win, channel):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win)
+        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel)
 
-    def findThreshold(self, win):
+    def findThreshold(self, win, channel):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiodeGroup.findThreshold(self, win)
+        return photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
 
 
 class TPadButton(button.BaseButton):
@@ -169,7 +169,7 @@ class TPad(sd.SerialDevice, base.BaseDevice):
             byteSize=8, stopBits=1,
             parity="N",  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
             eol=b"\n",
-            maxAttempts=1, pauseDuration=0.1,
+            maxAttempts=1, pauseDuration=1/240,
             checkAwake=True
     ):
         # get port if not given
@@ -247,7 +247,7 @@ class TPad(sd.SerialDevice, base.BaseDevice):
                 # get time in s using defaultClock units
                 time = float(time) / 1000 + self._lastTimerReset
                 # store in array
-                parts = (device, state, button, time)
+                parts = (device, state, channel, time)
                 # store message
                 self.messages[time] = line
                 # choose object to dispatch to
