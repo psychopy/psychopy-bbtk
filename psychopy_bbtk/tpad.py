@@ -96,7 +96,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             message = splitTPadMessage(message)
         # split into variables
         # assert isinstance(message, (tuple, list)) and len(message) == 4
-        channel, state, number, time = message
+        device, state, channel, time = message
         # convert state to bool
         if state == "P":
             state = True
@@ -111,7 +111,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # ).format(self.number, number, message)
         # create PhotodiodeResponse object
         resp = photodiode.PhotodiodeResponse(
-            time, state, threshold=self.getThreshold()
+            time, channel, state, threshold=self.getThreshold()
         )
 
         return resp
@@ -131,12 +131,10 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         return photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
 
 
-class TPadButton(button.BaseButton):
-    def __init__(self, pad, number):
+class TPadButtonGroup(button.BaseButtonGroup):
+    def __init__(self, pad, channels=1):
         # initialise base class
-        button.BaseButton.__init__(self, parent=pad)
-        # store number
-        self.number = number
+        button.BaseButtonGroup.__init__(self, parent=pad, channels=channels)
 
     def parseMessage(self, message):
         # if given a string, split according to regex
@@ -144,18 +142,30 @@ class TPadButton(button.BaseButton):
             message = splitTPadMessage(message)
         # split into variables
         # assert isinstance(message, (tuple, list)) and len(message) == 4
-        channel, state, number, time = message
+        device, state, channel, time = message
         # convert state to bool
         if state == "P":
             state = True
         elif state == "R":
             state = False
-        # create PhotodiodeResponse object
+        
         resp = button.ButtonResponse(
-            time, state
+            time, channel, state
         )
 
         return resp
+    
+    @staticmethod
+    def getAvailableDevices():
+        devices = []
+        # iterate through profiles of all serial port devices
+        for dev in TPad.getAvailableDevices():
+            devices.append({
+                'pad': dev['port'],
+                'channels': 10,
+            })
+
+        return devices
 
 
 class TPadVoicekey:
@@ -163,7 +173,7 @@ class TPadVoicekey:
         pass
 
 
-class TPad(sd.SerialDevice, base.BaseDevice):
+class TPad(sd.SerialDevice):
     def __init__(
             self, port=None, baudrate=115200,
             byteSize=8, stopBits=1,
@@ -310,7 +320,3 @@ class TPad(sd.SerialDevice, base.BaseDevice):
         self.pause()
         # reset mode
         self.setMode(3)
-
-
-# register some aliases for the TPad class with DeviceManager
-DeviceManager.registerAlias("tpad", deviceClass="psychopy_bbtk.tpad.TPad")
