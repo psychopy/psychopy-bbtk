@@ -133,6 +133,24 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
 class TPadButtonGroup(button.BaseButtonGroup):
     def __init__(self, pad, channels=1):
+        _requestedPad = pad
+        # try to get associated tpad
+        if isinstance(_requestedPad, str):
+            # try getting by name
+            pad = DeviceManager.getDevice(pad)
+            # if failed, try getting by port
+            if pad is None:
+                pad = DeviceManager.getDeviceBy("portString", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
+        # if still failed, make one
+        if pad is None:
+            pad = DeviceManager.addDevice(
+                deviceClass="psychopy_bbtk.tpad.TPad",
+                deviceName=_requestedPad,
+                port=_requestedPad
+            )
+
+        # reference self in pad
+        pad.nodes.append(self)
         # initialise base class
         button.BaseButtonGroup.__init__(self, parent=pad, channels=channels)
 
@@ -263,7 +281,7 @@ class TPad(sd.SerialDevice):
                 # choose object to dispatch to
                 for node in self.nodes:
                     # if device is A, dispatch only to buttons
-                    if device == "A" and not isinstance(node, TPadButton):
+                    if device == "A" and not isinstance(node, TPadButtonGroup):
                         continue
                     # if device is C, dispatch only to photodiodes
                     if device == "C" and not isinstance(node, TPadPhotodiodeGroup):
