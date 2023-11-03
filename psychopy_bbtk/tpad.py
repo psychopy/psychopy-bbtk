@@ -74,9 +74,10 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
     def getAvailableDevices():
         devices = []
         # iterate through profiles of all serial port devices
-        for dev in TPad.getAvailableDevices():
+        for profile in TPad.getAvailableDevices():
             devices.append({
-                'pad': dev['port'],
+                'deviceName': profile['Instance ID'] + "_photodiodes",
+                'pad': profile['port'],
                 'channels': 2,
             })
 
@@ -177,9 +178,10 @@ class TPadButtonGroup(button.BaseButtonGroup):
     def getAvailableDevices():
         devices = []
         # iterate through profiles of all serial port devices
-        for dev in TPad.getAvailableDevices():
+        for profile in TPad.getAvailableDevices():
             devices.append({
-                'pad': dev['port'],
+                'deviceName': profile['Instance ID'] + "_buttons",
+                'pad': profile['port'],
                 'channels': 10,
             })
 
@@ -227,6 +229,7 @@ class TPad(sd.SerialDevice):
         # iterate through profiles of all serial port devices
         for profile in st.systemProfilerWindowsOS(
             classid="{4d36e978-e325-11ce-bfc1-08002be10318}",
+            connected=True
         ):
             # skip non-bbtk profiles
             if "BBTKTPAD" not in profile['Instance ID']:
@@ -242,6 +245,7 @@ class TPad(sd.SerialDevice):
             num = desc[start:end]
 
             devices.append({
+                'deviceName': profile['Instance ID'],
                 'port': f"COM{num}",
             })
 
