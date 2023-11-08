@@ -76,7 +76,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['Instance ID'] + "_photodiodes",
+                'deviceName': profile['deviceName'] + "_photodiodes",
                 'pad': profile['port'],
                 'channels': 2,
             })
@@ -180,7 +180,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['Instance ID'] + "_buttons",
+                'deviceName': profile['deviceName'] + "_buttons",
                 'pad': profile['port'],
                 'channels': 10,
             })
