@@ -31,3 +31,6 @@ urls.repository = "https://github.com/psychopy/psychopy-bbtk"
 
 [tool.setuptools.packages.find]
 where = ["",]
+
+[project.entry-points."psychopy.experiment.components"]
+TPadButtonBoxBackend = "psychopy_bbtk.components.tpad:TPadButtonBoxBackend"

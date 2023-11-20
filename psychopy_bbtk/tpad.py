@@ -68,7 +68,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # reference self in pad
         pad.nodes.append(self)
         # initialise base class
-        photodiode.BasePhotodiodeGroup.__init__(self, pad, channels=channels)
+        photodiode.BasePhotodiodeGroup.__init__(self, channels=channels)
+        self.parent = pad
 
     @staticmethod
     def getAvailableDevices():
@@ -76,7 +77,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['Instance ID'] + "_photodiodes",
+                'deviceName': profile['deviceName'] + "_photodiodes",
                 'pad': profile['port'],
                 'channels': 2,
             })
@@ -90,6 +91,20 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             self.parent.sendMessage(f"AAO{n} {threshold}")
             self.parent.pause()
         self.parent.setMode(3)
+
+    def resetTimer(self, clock=logging.defaultClock):
+        self.parent.resetTimer(clock=clock)
+
+    def dispatchMessages(self):
+        """
+        Dispatch messages from parent TPad to this photodiode group
+
+        Returns
+        -------
+        bool
+            True if request sent successfully
+        """
+        self.parent.dispatchMessages()
 
     def parseMessage(self, message):
         # if given a string, split according to regex
@@ -133,7 +148,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
 
 class TPadButtonGroup(button.BaseButtonGroup):
-    def __init__(self, pad, channels=1):
+    def __init__(self, pad, channels=9):
         _requestedPad = pad
         # try to get associated tpad
         if isinstance(_requestedPad, str):
@@ -153,7 +168,19 @@ class TPadButtonGroup(button.BaseButtonGroup):
         # reference self in pad
         pad.nodes.append(self)
         # initialise base class
-        button.BaseButtonGroup.__init__(self, parent=pad, channels=channels)
+        button.BaseButtonGroup.__init__(self, channels=channels)
+        self.parent = pad
+
+    def dispatchMessages(self):
+        """
+        Dispatch messages from parent TPad to this button group
+
+        Returns
+        -------
+        bool
+            True if request sent successfully
+        """
+        self.parent.dispatchMessages()
 
     def parseMessage(self, message):
         # if given a string, split according to regex
@@ -180,12 +207,15 @@ class TPadButtonGroup(button.BaseButtonGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['Instance ID'] + "_buttons",
+                'deviceName': profile['deviceName'] + "_buttons",
                 'pad': profile['port'],
                 'channels': 10,
             })
 
         return devices
+
+    def resetTimer(self, clock=logging.defaultClock):
+        self.parent.resetTimer(clock=clock)
 
 
 class TPadVoicekey:
