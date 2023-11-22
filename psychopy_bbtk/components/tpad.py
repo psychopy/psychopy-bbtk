@@ -49,8 +49,10 @@ class TPadButtonBoxBackend(ButtonBoxBackend, key="tpad", label="BBTK TPad"):
                 "Serial port to connect to"
             )
         )
+        # define depends
+        depends = []
 
-        return params, order
+        return params, order, depends
 
     def addRequirements(self):
         """
