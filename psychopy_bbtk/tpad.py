@@ -194,6 +194,8 @@ class TPadButtonGroup(button.BaseButtonGroup):
             state = True
         elif state == "R":
             state = False
+        # convert channel to zero-indexed int
+        channel = int(channel) - 1
         
         resp = button.ButtonResponse(
             t=time, channel=channel, value=state
