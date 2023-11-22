@@ -61,14 +61,16 @@ class TPadButtonBoxBackend(ButtonBoxBackend, key="tpad", label="BBTK TPad"):
             importFrom="psychopy_bbtk"
         )
 
-    def writeInitCode(self, buff):
+    def writeDeviceCode(self, buff):
         # get inits
         inits = getInitVals(self.params)
-        # make Keyboard object
+        # make ButtonGroup object
         code = (
-            "%(name)s = tpad.TPadButtonGroup(\n"
-            "    %(serialPort)s,\n"
-            "    channels=%(nButtons)s\n"
+            "deviceManager.addDevice(\n"
+            "    deviceClass='psychopy_bbtk.tpad.TPadButtonGroup',\n"
+            "    deviceName=%(deviceName)s,\n"
+            "    pad=%(serialPort)s,\n"
+            "    channels=%(nButtons)s,\n"
             ")\n"
         )
-        buff.writeIndentedLines(code % inits)
+        buff.writeOnceIndentedLines(code % inits)
