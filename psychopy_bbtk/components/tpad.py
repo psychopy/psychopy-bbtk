@@ -41,7 +41,7 @@ class TPadButtonBoxBackend(ButtonBoxBackend, key="tpad", label="BBTK TPad"):
 
             return ports
 
-        params['serialPort'] = Param(
+        params['bbtkSerialPort'] = Param(
             "", valType="str", inputType="choice", categ="Device",
             allowedVals=getPorts,
             label=_translate("COM port"),
