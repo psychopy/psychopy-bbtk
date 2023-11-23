@@ -22,6 +22,7 @@ class TPadButtonBoxBackend(ButtonBoxBackend, key="tpad", label="BBTK TPad"):
         # define order
         order = [
             "serialPort",
+            "bbtkNButtons"
         ]
         # define params
         params = {}
@@ -49,10 +50,15 @@ class TPadButtonBoxBackend(ButtonBoxBackend, key="tpad", label="BBTK TPad"):
                 "Serial port to connect to"
             )
         )
-        # define depends
-        depends = []
+        self.params['bbtkNButtons'] = Param(
+            10, valType="code", inputType="single", categ="Device",
+            label=_translate("Num. buttons"),
+            hint=_translate(
+                "How many buttons this button box has."
+            )
+        )
 
-        return params, order, depends
+        return params, order
 
     def addRequirements(self):
         """
