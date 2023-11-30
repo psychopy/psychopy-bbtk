@@ -82,7 +82,7 @@ class TPadPhotodiodeValidatorBackend(DeviceBackend):
         # make ButtonGroup object
         code = (
             "deviceManager.addDevice(\n"
-            "    deviceClass='tpad.TPadPhotodiodeGroup',\n"
+            "    deviceClass='psychopy_bbtk.tpad.TPadPhotodiodeGroup',\n"
             "    deviceName=%(deviceName)s,\n"
             "    pad=%(bbtkSerialPort)s,\n"
             "    channels=%(bbtkNChannels)s,\n"
