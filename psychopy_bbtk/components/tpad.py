@@ -59,9 +59,9 @@ class TPadPhotodiodeValidatorBackend(DeviceBackend):
         )
         self.params['bbtkNChannels'] = Param(
             10, valType="code", inputType="single", categ="Device",
-            label=_translate("Num. buttons"),
+            label=_translate("Num. diodes"),
             hint=_translate(
-                "How many buttons this button box has."
+                "How many diodes this device has."
             )
         )
 
