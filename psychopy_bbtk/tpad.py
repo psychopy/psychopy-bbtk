@@ -230,8 +230,8 @@ class TPad(sd.SerialDevice):
             self, port=None, baudrate=115200,
             byteSize=8, stopBits=1,
             parity="N",  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
-            eol=b"\n",
-            maxAttempts=1, pauseDuration=1/240,
+            eol=b"\r\n",
+            maxAttempts=1, pauseDuration=1/1000,
             checkAwake=True
     ):
         # get port if not given
