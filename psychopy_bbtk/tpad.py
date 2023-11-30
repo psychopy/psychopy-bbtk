@@ -345,10 +345,8 @@ class TPad(sd.SerialDevice):
         self.getResponse()
         # exit out of whatever mode we're in (effectively set it to 0)
         self.sendMessage("X")
-        self.pause()
         # set mode
         self.sendMessage(f"MOD{mode}")
-        self.pause()
         # clear messages
         self.getResponse()
 
@@ -358,7 +356,7 @@ class TPad(sd.SerialDevice):
         # call help and get response
         self.sendMessage("HELP")
         self.pause()  # or response won't be ready
-        resp = self.getResponse()  # get all chars (a usage message)
+        resp = self.getResponse(length=2)  # get all chars (a usage message)
         # set to mode 3
         self.setMode(3)
         return bool(resp)
