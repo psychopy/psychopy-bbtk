@@ -83,7 +83,7 @@ class TPadPhotodiodeValidatorBackend(DeviceBackend):
         code = (
             "deviceManager.addDevice(\n"
             "    deviceClass='psychopy_bbtk.tpad.TPadPhotodiodeGroup',\n"
-            "    deviceName=%(deviceName)s,\n"
+            "    deviceName=%(deviceLabel)s,\n"
             "    pad=%(bbtkSerialPort)s,\n"
             "    channels=%(bbtkNChannels)s,\n"
             ")\n"
@@ -157,7 +157,7 @@ class TPadButtonBoxBackend(DeviceBackend):
         code = (
             "deviceManager.addDevice(\n"
             "    deviceClass='tpad.TPadButtonGroup',\n"
-            "    deviceName=%(deviceName)s,\n"
+            "    deviceName=%(deviceLabel)s,\n"
             "    pad=%(bbtkSerialPort)s,\n"
             "    channels=%(bbtkNButtons)s,\n"
             ")\n"
