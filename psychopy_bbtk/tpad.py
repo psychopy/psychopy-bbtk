@@ -354,7 +354,6 @@ class TPad(sd.SerialDevice):
 
     def isAwake(self):
         self.setMode(0)
-        self.pause()
         # call help and get response
         self.sendMessage("HELP")
         resp = self.awaitResponse()  # get all chars (a usage message)
@@ -369,7 +368,5 @@ class TPad(sd.SerialDevice):
         self.sendMessage(f"REST")
         # store time
         self._lastTimerReset = clock.getTime(format=float)
-        # allow time to process
-        self.pause()
         # reset mode
         self.setMode(3)
