@@ -87,7 +87,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
     def _setThreshold(self, threshold, channel):
         self.parent.setMode(0)
         self.parent.sendMessage(f"AAO{channel+1} {threshold}")
-        self.parent.pause()
+        self.parent.awaitResponse()
         self.parent.setMode(3)
 
     def resetTimer(self, clock=logging.defaultClock):
