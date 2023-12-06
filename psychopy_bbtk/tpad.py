@@ -68,8 +68,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # reference self in pad
         pad.nodes.append(self)
         # initialise base class
-        photodiode.BasePhotodiodeGroup.__init__(self, channels=channels)
         self.parent = pad
+        photodiode.BasePhotodiodeGroup.__init__(self, channels=channels)
 
     @staticmethod
     def getAvailableDevices():
@@ -84,12 +84,10 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         return devices
 
-    def setThreshold(self, threshold, channels=(1, 2)):
-        self._threshold = threshold
+    def _setThreshold(self, threshold, channel):
         self.parent.setMode(0)
-        for n in channels:
-            self.parent.sendMessage(f"AAO{n} {threshold}")
-            self.parent.pause()
+        self.parent.sendMessage(f"AAO{channel+1} {threshold}")
+        self.parent.pause()
         self.parent.setMode(3)
 
     def resetTimer(self, clock=logging.defaultClock):
@@ -127,7 +125,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # ).format(self.number, number, message)
         # create PhotodiodeResponse object
         resp = photodiode.PhotodiodeResponse(
-            t=time, channel=channel, value=state, threshold=self.getThreshold()
+            t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel)
         )
 
         return resp

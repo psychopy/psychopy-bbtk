@@ -156,7 +156,7 @@ class TPadButtonBoxBackend(DeviceBackend):
         # make ButtonGroup object
         code = (
             "deviceManager.addDevice(\n"
-            "    deviceClass='tpad.TPadButtonGroup',\n"
+            "    deviceClass='psychopy_bbtk.tpad.TPadButtonGroup',\n"
             "    deviceName=%(deviceLabel)s,\n"
             "    pad=%(bbtkSerialPort)s,\n"
             "    channels=%(bbtkNButtons)s,\n"
