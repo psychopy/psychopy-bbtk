@@ -350,15 +350,14 @@ class TPad(sd.SerialDevice):
         # set mode
         self.sendMessage(f"MOD{mode}")
         # clear messages
-        self.getResponse()
+        self.awaitResponse()
 
     def isAwake(self):
         self.setMode(0)
         self.pause()
         # call help and get response
         self.sendMessage("HELP")
-        self.pause()  # or response won't be ready
-        resp = self.getResponse(length=2)  # get all chars (a usage message)
+        resp = self.awaitResponse()  # get all chars (a usage message)
         # set to mode 3
         self.setMode(3)
         return bool(resp)
