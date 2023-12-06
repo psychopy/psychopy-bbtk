@@ -125,7 +125,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # ).format(self.number, number, message)
         # create PhotodiodeResponse object
         resp = photodiode.PhotodiodeResponse(
-            t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel)
+            t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
         )
 
         return resp
