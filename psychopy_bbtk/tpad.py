@@ -48,7 +48,7 @@ def splitTPadMessage(message):
 
 
 class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
-    def __init__(self, pad, channels):
+    def __init__(self, pad, channels, threshold=None, pos=None, size=None, units=None):
         _requestedPad = pad
         # try to get associated tpad
         if isinstance(_requestedPad, str):
@@ -69,7 +69,9 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         pad.nodes.append(self)
         # initialise base class
         self.parent = pad
-        photodiode.BasePhotodiodeGroup.__init__(self, channels=channels)
+        photodiode.BasePhotodiodeGroup.__init__(
+            self, channels=channels, threshold=threshold, pos=pos, size=size, units=units
+        )
 
     @staticmethod
     def getAvailableDevices():
@@ -85,6 +87,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         return devices
 
     def _setThreshold(self, threshold, channel):
+        if threshold is None:
+            return
         self.parent.setMode(0)
         self.parent.sendMessage(f"AAO{channel+1} {threshold}")
         self.parent.awaitResponse()
