@@ -89,10 +89,22 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
     def _setThreshold(self, threshold, channel):
         if threshold is None:
             return
+        # enter command mode
         self.parent.setMode(0)
+        # send command to set threshold
         self.parent.sendMessage(f"AAO{channel+1} {threshold}")
-        self.parent.awaitResponse()
+        resp = self.parent.awaitResponse()
+        # with this threshold, is the photodiode returning True?
+        measurement = None
+        if resp is not None:
+            if resp.strip() == "1":
+                measurement = True
+            if resp.strip() == "0":
+                measurement = False
+        # return to sampling mode
         self.parent.setMode(3)
+
+        return measurement
 
     def resetTimer(self, clock=logging.defaultClock):
         self.parent.resetTimer(clock=clock)
@@ -257,6 +269,12 @@ class TPad(sd.SerialDevice):
         self._lastTimerReset = None
         self.resetTimer()
 
+    def close(self):
+        # set mode to 0 on exit
+        self.setMode(0)
+        # close
+        sd.SerialDevice.close(self)
+
     @staticmethod
     def getAvailableDevices():
         devices = []
@@ -344,19 +362,20 @@ class TPad(sd.SerialDevice):
         return [profile['port'] for profile in available]
 
     def setMode(self, mode):
-        self.getResponse()
+        self.dispatchMessages()
         # exit out of whatever mode we're in (effectively set it to 0)
         self.sendMessage("X")
-        # set mode
-        self.sendMessage(f"MOD{mode}")
-        # clear messages
         self.awaitResponse()
+        if mode > 0:
+            # set mode
+            self.sendMessage(f"MOD{mode}")
+            self.awaitResponse()
 
     def isAwake(self):
         self.setMode(0)
         # call help and get response
         self.sendMessage("HELP")
-        resp = self.awaitResponse()  # get all chars (a usage message)
+        resp = self.awaitResponse(multiline=True)
         # set to mode 3
         self.setMode(3)
         return bool(resp)
