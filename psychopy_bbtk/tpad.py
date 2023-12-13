@@ -249,7 +249,7 @@ class TPad(sd.SerialDevice):
             self, port=None, baudrate=115200,
             byteSize=8, stopBits=1,
             parity="N",  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
-            eol=b"\r\n",
+            eol=b"\n",
             maxAttempts=1, pauseDuration=1/1000,
             checkAwake=True
     ):
@@ -372,7 +372,7 @@ class TPad(sd.SerialDevice):
     def setMode(self, mode):
         self.dispatchMessages()
         # skip if mode is locked
-        if self._modeLocked:
+        if self._modeLock:
             return
         # store requested mode
         self._mode = mode
