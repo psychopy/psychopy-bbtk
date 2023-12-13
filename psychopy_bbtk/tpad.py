@@ -154,11 +154,16 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel)
 
     def findThreshold(self, win, channel):
-        # set mode to 3
-        self.parent.setMode(3)
-        self.parent.pause()
+        # set mode to 0 and lock it so mode doesn't change during setThreshold calls
+        self.parent.setMode(0)
+        self.parent.lockMode()
         # continue as normal
-        return photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
+        resp = photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
+        # set back to mode 3
+        self.parent.unlockMode()
+        self.parent.setMode(3)
+
+        return resp
 
 
 class TPadButtonGroup(button.BaseButtonGroup):
@@ -251,6 +256,15 @@ class TPad(sd.SerialDevice):
         # get port if not given
         if port is None:
             port = self._detectComPort()[0]
+        # initial value for last timer reset
+        self._lastTimerReset = logging.defaultClock._timeAtLastReset
+        # dict of responses by timestamp
+        self.messages = {}
+        # nodes
+        self.nodes = []
+        # attribute to keep track of mode state
+        self._mode = None
+        self._modeLock = False
         # initialise serial
         sd.SerialDevice.__init__(
             self, port=port, baudrate=baudrate,
@@ -260,13 +274,7 @@ class TPad(sd.SerialDevice):
             maxAttempts=maxAttempts, pauseDuration=pauseDuration,
             checkAwake=checkAwake
         )
-        # nodes
-        self.nodes = []
-
-        # dict of responses by timestamp
-        self.messages = {}
         # reset timer
-        self._lastTimerReset = None
         self.resetTimer()
 
     def close(self):
@@ -363,6 +371,11 @@ class TPad(sd.SerialDevice):
 
     def setMode(self, mode):
         self.dispatchMessages()
+        # skip if mode is locked
+        if self._modeLocked:
+            return
+        # store requested mode
+        self._mode = mode
         # exit out of whatever mode we're in (effectively set it to 0)
         self.sendMessage("X")
         self.awaitResponse()
@@ -370,6 +383,36 @@ class TPad(sd.SerialDevice):
             # set mode
             self.sendMessage(f"MOD{mode}")
             self.awaitResponse()
+
+    def getMode(self):
+        return self._mode
+
+    def lockMode(self):
+        """
+        Temporarily lock to the current mode, meaning that subsequent called to `setMode` will
+        return with no effect until `unlockMode` is called.
+
+        Returns
+        -------
+        int
+            Current mode
+        """
+        self._modeLock = True
+
+        return self.getMode()
+
+    def unlockMode(self):
+        """
+        Unlock the mode, allowing `setMode` to be called and to have an effect.
+
+        Returns
+        -------
+        int
+            Current mode
+        """
+        self._modeLock = False
+
+        return self.getMode()
 
     def isAwake(self):
         self.setMode(0)
