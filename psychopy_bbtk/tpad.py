@@ -73,6 +73,30 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             self, channels=channels, threshold=threshold, pos=pos, size=size, units=units
         )
 
+    def isSameDevice(self, other):
+        """
+        Determine whether this object represents the same physical device as a given other object.
+
+        Parameters
+        ----------
+        other : TPadPhotodiodeGroup, dict
+            Other TPadPhotodiodeGroup to compare against, or a dict of params (which much include
+            `port` or `pad` as a key)
+
+        Returns
+        -------
+        bool
+            True if the two objects represent the same physical device
+        """
+        if isinstance(other, type(self)):
+            # if given another TPadButtonGroup, compare parent boxes
+            other = other.parent
+        elif isinstance(other, dict) and "pad" in other:
+            # if given a dict, make sure we have a `port` rather than a `pad`
+            other['port'] = other['pad']
+        # use parent's comparison method
+        return self.parent.isSameDevice(other)
+
     @staticmethod
     def getAvailableDevices():
         devices = []
@@ -189,6 +213,30 @@ class TPadButtonGroup(button.BaseButtonGroup):
         # initialise base class
         button.BaseButtonGroup.__init__(self, channels=channels)
         self.parent = pad
+
+    def isSameDevice(self, other):
+        """
+        Determine whether this object represents the same physical device as a given other object.
+
+        Parameters
+        ----------
+        other : TPadButtonGroup, dict
+            Other TPadButtonGroup to compare against, or a dict of params (which must include
+            `port` or `pad` as a key)
+
+        Returns
+        -------
+        bool
+            True if the two objects represent the same physical device
+        """
+        if isinstance(other, type(self)):
+            # if given another TPadButtonGroup, compare parent boxes
+            other = other.parent
+        elif isinstance(other, dict) and "pad" in other:
+            # if given a dict, make sure we have a `port` rather than a `pad`
+            other['port'] = other['pad']
+        # use parent's comparison method
+        return self.parent.isSameDevice(other)
 
     def dispatchMessages(self):
         """
