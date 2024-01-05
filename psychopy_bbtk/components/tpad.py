@@ -28,6 +28,8 @@ class TPadPhotodiodeValidatorBackend(DeviceBackend):
     key = "tpad"
     # what label should be displayed by Builder for this backend?
     label = _translate("BBTK TPad")
+    # what hardware classes are relevant to this backend?
+    deviceClasses = ["psychopy_bbtk.tpad.TPadPhotodiodeGroup"]
 
     def getParams(self):
         """
@@ -102,6 +104,8 @@ class TPadButtonBoxBackend(DeviceBackend):
     key = "tpad"
     # what label should be displayed by Builder for this backend?
     label = _translate("BBTK TPad")
+    # what hardware classes are relevant to this backend?
+    deviceClasses = ["psychopy_bbtk.tpad.TPadButtonGroup"]
 
     def getParams(self):
         """
