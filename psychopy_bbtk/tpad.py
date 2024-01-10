@@ -183,6 +183,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         self.parent.lockMode()
         # continue as normal
         resp = photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
+        self._setThreshold(0, channel=1)
         # set back to mode 3
         self.parent.unlockMode()
         self.parent.setMode(3)
@@ -470,6 +471,28 @@ class TPad(sd.SerialDevice):
         # set to mode 3
         self.setMode(3)
         return bool(resp)
+
+    def checkSpeed(self, target=5/1000):
+        import time
+        # enter command mode
+        self.setMode(0)
+        # repeat 25 times...
+        times = []
+        for n in range(25):
+            # start timing
+            start = time.time()
+            # send commands
+            self.sendMessage("FIRM")
+            # what did we get?
+            self.awaitResponse()
+            # how long did it take?
+            times.append(time.time() - start)
+        # average times
+        avg = sum(times) / len(times)
+        # return to data mode
+        self.setMode(3)
+
+        return avg <= target
 
     def resetTimer(self, clock=logging.defaultClock):
         # make sure we're in mode 3
