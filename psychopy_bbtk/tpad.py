@@ -473,6 +473,19 @@ class TPad(sd.SerialDevice):
         return bool(resp)
 
     def checkSpeed(self, target=5/1000):
+        """
+        Parameters
+        ----------
+        target : float
+            Target time (s) which a single request should take to return.
+
+        Returns
+        -------
+        bool
+            True if average time to return was less than the target time
+        float
+            Average time taken to return
+        """
         import time
         # enter command mode
         self.setMode(0)
@@ -491,8 +504,11 @@ class TPad(sd.SerialDevice):
         avg = sum(times) / len(times)
         # return to data mode
         self.setMode(3)
+        self.awaitResponse()
+        # are we below the target?
+        valid = avg <= target
 
-        return avg <= target
+        return valid, avg
 
     def resetTimer(self, clock=logging.defaultClock):
         # make sure we're in mode 3
