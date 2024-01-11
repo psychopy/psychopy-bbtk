@@ -10,7 +10,7 @@ def getTPadPorts():
     Get a list of ports which have TPad devices connected.
     """
     from psychopy_bbtk.tpad import TPad
-    ports = []
+    ports = [""]
     # iterate through available button boxes
     for profile in TPad.getAvailableDevices():
         # add this box's port
