@@ -4,6 +4,7 @@ from psychopy import logging, layout
 from psychopy.tools import systemtools as st
 import serial
 import re
+import sys
 
 # possible values for self.channel
 channelCodes = {
@@ -335,28 +336,35 @@ class TPad(sd.SerialDevice):
     @staticmethod
     def getAvailableDevices():
         devices = []
-        # iterate through profiles of all serial port devices
-        for profile in st.systemProfilerWindowsOS(
-            classid="{4d36e978-e325-11ce-bfc1-08002be10318}",
-            connected=True
-        ):
-            # skip non-bbtk profiles
-            if "BBTKTPAD" not in profile['Instance ID']:
-                continue
-            # find "COM" in profile description
-            desc = profile['Device Description']
-            start = desc.find("COM") + 3
-            end = desc.find(")", start)
-            # if there's no reference to a COM port, skip
-            if -1 in (start, end):
-                continue
-            # get COM port number
-            num = desc[start:end]
-
-            devices.append({
-                'deviceName': profile['Instance ID'],
-                'port': f"COM{num}",
-            })
+        if sys.platform == "win32":  
+            # iterate through profiles of all serial port devices
+            for profile in st.systemProfilerWindowsOS(
+                classid="{4d36e978-e325-11ce-bfc1-08002be10318}",
+                connected=True
+            ):
+                # skip non-bbtk profiles
+                if "BBTKTPAD" not in profile['Instance ID']:
+                    continue
+                # find "COM" in profile description
+                desc = profile['Device Description']
+                start = desc.find("COM") + 3
+                end = desc.find(")", start)
+                # if there's no reference to a COM port, skip
+                if -1 in (start, end):
+                    continue
+                # get COM port number
+                num = desc[start:end]
+    
+                devices.append({
+                    'deviceName': profile['Instance ID'],
+                    'port': f"COM{num}",
+                })
+        else:
+            for profile in sd.SerialDevice.getAvailableDevices():
+                devices.append({
+                    'deviceName': profile['deviceName'],
+                    'port': profile['port'],
+                })
 
         return devices
 
