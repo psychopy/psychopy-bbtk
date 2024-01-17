@@ -59,7 +59,7 @@ class TPadPhotodiodeValidatorBackend(DeviceBackend):
                 "Serial port to connect to"
             )
         )
-        self.params['bbtkNChannels'] = Param(
+        params['bbtkNChannels'] = Param(
             2, valType="code", inputType="single", categ="Device",
             label=_translate("Num. diodes"),
             hint=_translate(
@@ -135,7 +135,7 @@ class TPadButtonBoxBackend(DeviceBackend):
                 "Serial port to connect to"
             )
         )
-        self.params['bbtkNButtons'] = Param(
+        params['bbtkNButtons'] = Param(
             10, valType="code", inputType="single", categ="Device",
             label=_translate("Num. buttons"),
             hint=_translate(
