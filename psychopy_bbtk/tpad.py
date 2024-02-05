@@ -93,6 +93,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             # if given another TPadButtonGroup, compare parent boxes
             other = other.parent
         elif isinstance(other, dict) and "pad" in other:
+            # create copy of dict so we don't affect the original
+            other = other.copy()
             # if given a dict, make sure we have a `port` rather than a `pad`
             other['port'] = other['pad']
         # use parent's comparison method
@@ -235,6 +237,8 @@ class TPadButtonGroup(button.BaseButtonGroup):
             # if given another TPadButtonGroup, compare parent boxes
             other = other.parent
         elif isinstance(other, dict) and "pad" in other:
+            # create copy of dict so we don't affect the original
+            other = other.copy()
             # if given a dict, make sure we have a `port` rather than a `pad`
             other['port'] = other['pad']
         # use parent's comparison method
