@@ -36,7 +36,7 @@ buttonCodes = {
 
 # define format for messages
 messageFormat = (
-    r"([{channels}]) ([{states}]) ([{buttons}]) (\d*)"
+    r"([{channels}]) ([{states}]) ([{buttons}]) (\d\d*)"
 ).format(
     channels="".join(re.escape(key) for key in channelCodes),
     states="".join(re.escape(key) for key in stateCodes),
