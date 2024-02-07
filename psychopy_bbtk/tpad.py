@@ -417,6 +417,8 @@ class TPad(sd.SerialDevice):
                     # dispatch to node
                     message = node.parseMessage(parts)
                     node.receiveMessage(message)
+                else:
+                    logging.debug(f"Received unparsable message from TPad: {line}")
 
     @staticmethod
     def _detectComPort():
