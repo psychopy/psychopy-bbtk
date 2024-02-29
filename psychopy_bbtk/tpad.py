@@ -164,7 +164,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # ).format(self.number, number, message)
         # create PhotodiodeResponse object
         resp = photodiode.PhotodiodeResponse(
-            t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
+            t=time, channel=channel, value=state, threshold=self.getThreshold(channel-1)
         )
 
         return resp
@@ -259,8 +259,8 @@ class TPadButtonGroup(button.BaseButtonGroup):
             state = True
         elif state == "R":
             state = False
-        # convert channel to zero-indexed int
-        channel = int(channel) - 1
+        # convert channel to int
+        channel = int(channel)
         
         resp = button.ButtonResponse(
             t=time, channel=channel, value=state
