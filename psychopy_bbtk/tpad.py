@@ -60,11 +60,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
                 pad = DeviceManager.getDeviceBy("portString", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
         # if still failed, make one
         if pad is None:
-            pad = DeviceManager.addDevice(
-                deviceClass="psychopy_bbtk.tpad.TPad",
-                deviceName=_requestedPad,
-                port=_requestedPad
-            )
+            pad = TPad(port=_requestedPad)
 
         # reference self in pad
         pad.nodes.append(self)
@@ -206,11 +202,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
                 pad = DeviceManager.getDeviceBy("portString", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
         # if still failed, make one
         if pad is None:
-            pad = DeviceManager.addDevice(
-                deviceClass="psychopy_bbtk.tpad.TPad",
-                deviceName=_requestedPad,
-                port=_requestedPad
-            )
+            pad = TPad(port=_requestedPad)
 
         # reference self in pad
         pad.nodes.append(self)
