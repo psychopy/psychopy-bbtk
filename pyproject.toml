@@ -32,5 +32,25 @@ urls.repository = "https://github.com/psychopy/psychopy-bbtk"
 [tool.setuptools.packages.find]
 where = ["",]
 
+[project.optional-dependencies]
+# dependencies for building the docs
+docs = [
+  "psychopy",
+  "sphinx",
+  "furo",
+]
+# dependencies for running the test suite
+tests = [
+  "psychopy @ git+https://github.com/psychopy/psychopy@release",
+  "pytest",
+]
+
 [project.entry-points."psychopy.experiment.components"]
 TPadButtonBoxBackend = "psychopy_bbtk.components.tpad:TPadButtonBoxBackend"
+
+[project.entry-points."psychopy.hardware.bbtk"]
+TPadPhotodiodeGroup = "psychopy_bbtk.tpad:TPadPhotodiodeGroup"
+TPadButtonGroup = "psychopy_bbtk.tpad:TPadButtonGroup"
+TPadVoiceKey = "psychopy_bbtk.tpad:TPadVoiceKey"
+TPad = "psychopy_bbtk.tpad:TPad"
+BBTKForcePad = "psychopy_bbtk.forcePad:BBTKForcePad"
