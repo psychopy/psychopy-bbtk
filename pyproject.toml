@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "psychopy-bbtk"
-version = "0.0.4"
+version = "0.0.7"
 description = "Extension package for adding support for BlackBoxToolkit devices to PsychoPy."
 readme = "README.md"
 requires-python = ">= 3.7"
