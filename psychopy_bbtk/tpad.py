@@ -306,6 +306,9 @@ class TPad(sd.SerialDevice):
         self._lastTimerReset = logging.defaultClock._timeAtLastReset
         # dict of responses by timestamp
         self.messages = {}
+        # indicator that a message dispatch is currently in progress (prevents threaded 
+        # dispatch loops from tripping over one another)
+        self._dispatchInProgress = False
         # nodes
         self.nodes = []
         # attribute to keep track of mode state
@@ -378,6 +381,11 @@ class TPad(sd.SerialDevice):
             node.addListener(listener)
 
     def dispatchMessages(self):
+        # do nothing if there's already a dispatch in progress
+        if self._dispatchInProgress:
+            return
+        # mark that a dispatch has begun
+        self._dispatchInProgress = True
         # get data from box
         self.pause()
         data = self.getResponse(length=2)
@@ -411,6 +419,8 @@ class TPad(sd.SerialDevice):
                     node.receiveMessage(message)
                 else:
                     logging.debug(f"Received unparsable message from TPad: {line}")
+        # mark that a dispatch has finished
+        self._dispatchInProgress = False
 
     @staticmethod
     def _detectComPort():
