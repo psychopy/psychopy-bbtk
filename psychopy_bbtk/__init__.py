@@ -10,8 +10,18 @@ ports and check for the expected device
 # Distributed under the terms of the GNU General Public License (GPL).
 
 import time
+import importlib.metadata
 from psychopy import logging
 from psychopy.hardware import serialdevice
+
+
+# get version from pyproject.toml
+try:
+    __version__ = importlib.metadata.version("psychopy-bbtk")
+except importlib.metadata.PackageNotFoundError:
+    # fallback version to "0.dev"
+    __version__ = "0.dev"
+
 
 evtChannels = {
     0: "Key4",
