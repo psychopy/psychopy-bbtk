@@ -36,7 +36,7 @@ buttonCodes = {
 
 # define format for messages
 messageFormat = (
-    r"([{channels}]) ([{states}]) ([{buttons}]) (\d\d*)"
+    r"([{channels}]) ([{states}]) ([{buttons}]) (\d\d*)\r\n"
 ).format(
     channels="".join(re.escape(key) for key in channelCodes),
     states="".join(re.escape(key) for key in stateCodes),
@@ -285,7 +285,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
         self.parent.resetTimer(clock=clock)
 
 
-class TPadVoicekey:
+class TPadVoiceKey:
     def __init__(self, *args, **kwargs):
         pass
 
@@ -295,7 +295,7 @@ class TPad(sd.SerialDevice):
             self, port=None, baudrate=115200,
             byteSize=8, stopBits=1,
             parity="N",  # 'N'one, 'E'ven, 'O'dd, 'M'ask,
-            eol=b"\n",
+            eol=b"\r\n",
             maxAttempts=1, pauseDuration=1/1000,
             checkAwake=True
     ):
@@ -309,6 +309,8 @@ class TPad(sd.SerialDevice):
         # indicator that a message dispatch is currently in progress (prevents threaded 
         # dispatch loops from tripping over one another)
         self._dispatchInProgress = False
+        # attribute to store last line in case of splicing
+        self._lastLine = ""
         # nodes
         self.nodes = []
         # attribute to keep track of mode state
@@ -387,9 +389,18 @@ class TPad(sd.SerialDevice):
         # mark that a dispatch has begun
         self._dispatchInProgress = True
         # get data from box
-        self.pause()
-        data = self.getResponse(length=2)
-        self.pause()
+        data = self.getResponse(length=-1, timeout=1/10000)
+        # handle line splicing
+        if data:
+            # split into lines
+            data = data.splitlines(keepends=True)
+            # prepend last unfinished line to first line of this dispatch
+            data[0] = self._lastLine + data[0]
+            # if last line wasn't finished, store it for next dispatch
+            if not data[-1].endswith("\r\n"):
+                self._lastLine = data.pop(-1)
+            else:
+                self._lastLine = ""
         # parse lines
         for line in data:
             if re.match(messageFormat, line):
