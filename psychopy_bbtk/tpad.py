@@ -1,5 +1,5 @@
 from psychopy.hardware import base, serialdevice as sd, photodiode, button
-from psychopy.hardware.manager import deviceManager, DeviceManager
+from psychopy.hardware.manager import deviceManager, DeviceManager, ManagedDeviceError
 from psychopy import logging, layout
 from psychopy.tools import systemtools as st
 import serial
@@ -51,21 +51,11 @@ def splitTPadMessage(message):
 class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
     def __init__(self, pad, channels, threshold=None, pos=None, size=None, units=None):
         _requestedPad = pad
-        # try to get associated tpad
-        if isinstance(_requestedPad, str):
-            # try getting by name
-            pad = DeviceManager.getDevice(pad)
-            # if failed, try getting by port
-            if pad is None:
-                pad = DeviceManager.getDeviceBy("portString", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
-        # if still failed, make one
-        if pad is None:
-            pad = TPad(port=_requestedPad)
-
+        # get associated tpad
+        self.parent = TPad.resolve(pad)
         # reference self in pad
-        pad.nodes.append(self)
+        self.parent.nodes.append(self)
         # initialise base class
-        self.parent = pad
         photodiode.BasePhotodiodeGroup.__init__(
             self, channels=channels, threshold=threshold, pos=pos, size=size, units=units
         )
@@ -192,23 +182,12 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
 class TPadButtonGroup(button.BaseButtonGroup):
     def __init__(self, pad, channels=9):
-        _requestedPad = pad
-        # try to get associated tpad
-        if isinstance(_requestedPad, str):
-            # try getting by name
-            pad = DeviceManager.getDevice(pad)
-            # if failed, try getting by port
-            if pad is None:
-                pad = DeviceManager.getDeviceBy("portString", _requestedPad, deviceClass="psychopy_bbtk.tpad.TPad")
-        # if still failed, make one
-        if pad is None:
-            pad = TPad(port=_requestedPad)
-
+        # get associated tpad
+        self.parent = TPad.resolve(pad)
         # reference self in pad
-        pad.nodes.append(self)
+        self.parent.nodes.append(self)
         # initialise base class
         button.BaseButtonGroup.__init__(self, channels=channels)
-        self.parent = pad
 
     def isSameDevice(self, other):
         """
@@ -368,6 +347,45 @@ class TPad(sd.SerialDevice):
                 })
 
         return devices
+
+    @classmethod
+    def resolve(cls, requested):
+        """
+        Take a value given to a device which has a TPad as its parent and, from it, 
+        find/make the associated TPad object.
+
+        Parameters
+        ----------
+        requested : str, int or TPad
+            Value to resolve
+        """
+        # if requested is already a handle, return as is
+        if isinstance(requested, cls):
+            return requested
+        # try to get by name
+        if isinstance(requested, str):
+            pad = DeviceManager.getDevice(requested)
+            # if found, return
+            if pad is not None:
+                return pad
+        # if requested looks like a port number, turn it into a port string
+        if isinstance(requested, int):
+            requested = f"COM{requested}"
+        # try to get by port
+        if isinstance(requested, str):
+            pad = DeviceManager.getDeviceBy("portString", requested, deviceClass="psychopy_bbtk.tpad.TPad")
+            # if found, return
+            if pad is not None:
+                return pad
+        # if given port of a not-yet setup device, set one up
+        if requested is None or isinstance(requested, str):
+            return DeviceManager.addDevice(
+                deviceClass="psychopy_bbtk.tpad.TPad",
+                deviceName=f"TPad@{requested}",
+                port=requested
+            )
+        # if still not found, raise error
+        raise ManagedDeviceError(f"Could not find/create any {cls.__name__} object from the value {requested}")
 
     def addListener(self, listener):
         """
