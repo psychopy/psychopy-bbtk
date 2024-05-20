@@ -132,6 +132,17 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
             True if request sent successfully
         """
         self.parent.dispatchMessages()
+    
+    def hasUnfinishedMessage(self):
+        """
+        Is the parent TPad waiting for an end-of-line character?
+        
+        Returns
+        -------
+        bool
+            True if there is a partial message waiting for an end-of-line
+        """
+        return self.parent.hasUnfinishedMessage()
 
     def parseMessage(self, message):
         # if given a string, split according to regex
@@ -225,6 +236,17 @@ class TPadButtonGroup(button.BaseButtonGroup):
             True if request sent successfully
         """
         self.parent.dispatchMessages()
+    
+    def hasUnfinishedMessage(self):
+        """
+        Is the parent TPad waiting for an end-of-line character?
+        
+        Returns
+        -------
+        bool
+            True if there is a partial message waiting for an end-of-line
+        """
+        return self.parent.hasUnfinishedMessage()
 
     def parseMessage(self, message):
         # if given a string, split according to regex
@@ -450,6 +472,31 @@ class TPad(sd.SerialDevice):
                     logging.debug(f"Received unparsable message from TPad: {line}")
         # mark that a dispatch has finished
         self._dispatchInProgress = False
+    
+    def hasUnfinishedMessage(self):
+        """
+        We don't wait for an end-of-line from the TPad device before continuing, as 
+        dispatchMessages is often called in a frame loop so waiting for messages would 
+        ruin the frame rate. If just the start of a message has been received, this 
+        function will return True.
+
+        Usage
+        -----
+        If you want to be certain that all events have been dispatched, you can do:
+        ```
+        timeout = Clock()
+        while myTPad.hasUnfinishedMessage() and timeout.getTime() < 0.1:
+            myTPad.dispatchMessages()
+        ```
+        (the purpose of the `timeout` clock is to avoid getting into an infinite loop 
+        if the TPad sends anything unexpected)
+        
+        Returns
+        -------
+        bool
+            True if there is a partial message waiting for an end-of-line
+        """
+        return bool(self._lastMessage)
 
     @staticmethod
     def _detectComPort():
