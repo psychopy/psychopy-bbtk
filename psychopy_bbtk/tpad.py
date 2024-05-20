@@ -496,7 +496,7 @@ class TPad(sd.SerialDevice):
         bool
             True if there is a partial message waiting for an end-of-line
         """
-        return bool(self._lastMessage)
+        return bool(self._lastLine)
 
     @staticmethod
     def _detectComPort():
