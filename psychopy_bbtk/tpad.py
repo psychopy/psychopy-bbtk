@@ -106,7 +106,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         self.parent.setMode(0)
         # send command to set threshold
         self.parent.sendMessage(f"AAO{channel+1} {threshold}")
-        resp = self.parent.awaitResponse()
+        resp = self.parent.awaitResponse(timeout=0.1)
         # with this threshold, is the photodiode returning True?
         measurement = None
         if resp is not None:
@@ -170,14 +170,14 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         return resp
 
-    def findPhotodiode(self, win, channel):
+    def findPhotodiode(self, win, channel=None):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
         return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel)
 
-    def findThreshold(self, win, channel):
+    def findThreshold(self, win, channel=None):
         # set mode to 0 and lock it so mode doesn't change during setThreshold calls
         self.parent.setMode(0)
         self.parent.lockMode()
@@ -328,6 +328,9 @@ class TPad(sd.SerialDevice):
         )
         # reset timer
         self.resetTimer()
+    
+    def __del__(self):
+        self.close()
 
     def close(self):
         # set mode to 0 on exit
