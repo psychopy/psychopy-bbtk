@@ -106,7 +106,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         self.parent.setMode(0)
         # send command to set threshold
         self.parent.sendMessage(f"AAO{channel+1} {threshold}")
-        resp = self.parent.awaitResponse()
+        resp = self.parent.awaitResponse(timeout=0.1)
         # with this threshold, is the photodiode returning True?
         measurement = None
         if resp is not None:
