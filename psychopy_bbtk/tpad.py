@@ -328,6 +328,9 @@ class TPad(sd.SerialDevice):
         )
         # reset timer
         self.resetTimer()
+    
+    def __del__(self):
+        self.close()
 
     def close(self):
         # set mode to 0 on exit
