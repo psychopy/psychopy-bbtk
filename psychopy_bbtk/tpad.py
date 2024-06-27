@@ -524,6 +524,8 @@ class TPad(sd.SerialDevice):
         self.sendMessage("X")
         self.awaitResponse()
         if mode > 0:
+            # the box needs to pause after resetting in order to then be set again
+            self.pause()
             # set mode
             self.sendMessage(f"MOD{mode}")
             self.awaitResponse()
