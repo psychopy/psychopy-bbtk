@@ -563,7 +563,7 @@ class TPad(sd.SerialDevice):
     def isAwake(self):
         self.setMode(0)
         # call help and get response
-        self.sendMessage("HELP")
+        self.sendMessage("FIRM")
         resp = self.awaitResponse(multiline=True)
         # set to mode 3
         self.setMode(3)
