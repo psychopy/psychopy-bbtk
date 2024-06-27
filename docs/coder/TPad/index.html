@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TPad &#8212; PsychoPy Example Plugin 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=536c50fe" />
+    <link rel="stylesheet" type="text/css" href="../../_static/psychopy.css?v=b9f4e6dd" />
+    <script src="../../_static/documentation_options.js?v=d20be8f5"></script>
+    <script src="../../_static/doctools.js?v=b682be12"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script src="../../_static/js/jquery-fix.js"></script>
+    <script src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="TPadButtonGroup" href="../TPadButtonGroup/" />
+    <link rel="prev" title="BBTKForcePad" href="../BBTKForcePad/" />
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4089651-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-4089651-2');
+    </script>
+
+    <!-- Matomo -->
+    <script>
+      var _paq = window._paq = window._paq || [];
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+      _paq.push(["setCookieDomain", "*.psychopy.org"]);
+      _paq.push(["setDomains", ["*.psychopy.org","*.discourse.psychopy.org"]]);
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="//analytics.opensciencetools.org/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '3']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+    <noscript><p><img src="//analytics.opensciencetools.org/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+    <!-- End Matomo Code -->
+
+
+  </head><body>
+
+<!-- The social media icon bar -->
+<div class="social-bar">
+  <a href="" class="github">
+    <i class="fab fa-github"></i></a>
+</div>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand small-logo" href="../../">
+          <img src="../../_static/Psychopy Plugin Header Small.png" alt="PsychoPy Logo">
+        </a>
+        <a class="navbar-brand large-logo" href="../../">
+          <img src="../../_static/Psychopy Plugin Header Large.png" alt="PsychoPy Logo">
+        </a>
+        <!-- <span class="navbar-text navbar-version pull-right"><b></b></span> -->
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse w-100 pull-right">
+          <ul class="nav navbar-nav ml-auto">
+            <li><a href="../../">Home</a></li>
+            <li><a href="../../download/">Install</a></li>
+            
+            <li><a href="https://plugins.psychopy.org/directory.html" class="return-btn">plugins.psychopy.org</a></li>
+            
+              <!-- <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Added content for Coder</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../BBTKForcePad/">BBTKForcePad</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TPad</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPadButtonGroup/">TPadButtonGroup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPadPhotodiodeGroup/">TPadPhotodiodeGroup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPadVoiceKey/">TPadVoiceKey</a></li>
+</ul>
+</ul>
+</li> -->
+              
+            
+            <!--  -->
+            
+            
+          </ul>
+
+            <!-- 
+              
+<form class="navbar-form navbar-right" action="../../search/" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+             -->
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9 content">
+      
+  <section id="tpad">
+<h1>TPad<a class="headerlink" href="#tpad" title="Link to this heading">¶</a></h1>
+<p>To import TPad, you can either use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">psychopy_bbtk.tpad</span> <span class="kn">import</span> <span class="n">TPad</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>or, any time after <cite>psychopy.plugins.activatePlugins</cite> has been called::</dt><dd><p>from psychopy.hardware.bbtk import TPad</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">psychopy_bbtk.tpad.</span></span><span class="sig-name descname"><span class="pre">TPad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.addListener">
+<span class="sig-name descname"><span class="pre">addListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.addListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.addListener" title="Link to this definition">¶</a></dt>
+<dd><p>Add a listener, which will receive all the messages dispatched by this TPad.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>listener</strong> (<em>hardware.listener.BaseListener</em>) – Object to duplicate messages to when dispatched by this TPad.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.awaitResponse">
+<span class="sig-name descname"><span class="pre">awaitResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multiline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.awaitResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Repeatedly request responses until one arrives, or until a timeout is hit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>multiline</strong> (<em>bool</em>) – Look for additional lines after the first? WARNING: May be slow if there are none.</p></li>
+<li><p><strong>timeout</strong> – Time after which to give up waiting (by default is 10x pause length)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The message eventually received</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.checkSpeed">
+<span class="sig-name descname"><span class="pre">checkSpeed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.checkSpeed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.checkSpeed" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>target</strong> (<em>float</em>) – Target time (s) which a single request should take to return.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>bool</em> – True if average time to return was less than the target time</p></li>
+<li><p><em>float</em> – Average time taken to return</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.close" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.dispatchMessages">
+<span class="sig-name descname"><span class="pre">dispatchMessages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.dispatchMessages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.dispatchMessages" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.driverFor">
+<span class="sig-name descname"><span class="pre">driverFor</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.driverFor" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.getAvailableDevices">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getAvailableDevices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.getAvailableDevices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.getAvailableDevices" title="Link to this definition">¶</a></dt>
+<dd><p>Get all available devices of this type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of dictionaries containing the parameters needed to initialise each device.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.getDeviceProfile">
+<span class="sig-name descname"><span class="pre">getDeviceProfile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.getDeviceProfile" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a dictionary describing this device by finding the profile from
+getAvailableDevices which represents the same physical device as this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary representing this device</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.getJSON">
+<span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asString</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.getJSON" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the output of getDeviceProfile to a JSON string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asString</strong> (<em>bool</em>) – If True, then the output will be converted to a string, otherwise will simply be a
+JSON-friendly dict.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON string (or JSON friendly dict) of getDeviceProfile.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.getMode">
+<span class="sig-name descname"><span class="pre">getMode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.getMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.getMode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.getResponse">
+<span class="sig-name descname"><span class="pre">getResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.getResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Read the latest response from the serial port</p>
+<p>Parameters:</p>
+<dl class="simple">
+<dt><cite>length</cite> determines whether we expect:</dt><dd><ul class="simple">
+<li><p>1: a single-line reply (use readline())</p></li>
+<li><p>2: a multiline reply (use readlines() which <em>requires</em> timeout)</p></li>
+<li><dl class="simple">
+<dt>-1: may not be any EOL character; just read whatever chars are</dt><dd><p>there</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.hasUnfinishedMessage">
+<span class="sig-name descname"><span class="pre">hasUnfinishedMessage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.hasUnfinishedMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.hasUnfinishedMessage" title="Link to this definition">¶</a></dt>
+<dd><p>We don’t wait for an end-of-line from the TPad device before continuing, as
+dispatchMessages is often called in a frame loop so waiting for messages would
+ruin the frame rate. If just the start of a message has been received, this
+function will return True.</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<p>If you want to be certain that all events have been dispatched, you can do:
+<a href="#id1"><span class="problematic" id="id2">``</span></a>`
+timeout = Clock()
+while myTPad.hasUnfinishedMessage() and timeout.getTime() &lt; 0.1:</p>
+<blockquote>
+<div><p>myTPad.dispatchMessages()</p>
+</div></blockquote>
+<p><a href="#id3"><span class="problematic" id="id4">``</span></a>`
+(the purpose of the <cite>timeout</cite> clock is to avoid getting into an infinite loop
+if the TPad sends anything unexpected)</p>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if there is a partial message waiting for an end-of-line</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.isAwake">
+<span class="sig-name descname"><span class="pre">isAwake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.isAwake"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.isAwake" title="Link to this definition">¶</a></dt>
+<dd><p>This should be overridden by the device class</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.isOpen">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">isOpen</span></span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.isOpen" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.isSameDevice">
+<span class="sig-name descname"><span class="pre">isSameDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.isSameDevice" title="Link to this definition">¶</a></dt>
+<dd><p>Determine whether this object represents the same physical device as a given other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>SerialDevice</em><em>, </em><em>dict</em>) – Other SerialDevice to compare against, or a dict of params (which must include
+<cite>port</cite> as a key)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the two objects represent the same physical device</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.lockMode">
+<span class="sig-name descname"><span class="pre">lockMode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.lockMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.lockMode" title="Link to this definition">¶</a></dt>
+<dd><p>Temporarily lock to the current mode, meaning that subsequent called to <cite>setMode</cite> will
+return with no effect until <cite>unlockMode</cite> is called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current mode</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.longName">
+<span class="sig-name descname"><span class="pre">longName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.longName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">b'baseSerialClass'</span></em><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.pause">
+<span class="sig-name descname"><span class="pre">pause</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.pause" title="Link to this definition">¶</a></dt>
+<dd><p>Pause for a default period for this device</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.resetTimer">
+<span class="sig-name descname"><span class="pre">resetTimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clock=&lt;psychopy.clock.MonotonicClock</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.resetTimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.resetTimer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.resolve">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">requested</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.resolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.resolve" title="Link to this definition">¶</a></dt>
+<dd><p>Take a value given to a device which has a TPad as its parent and, from it,
+find/make the associated TPad object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>requested</strong> (<em>str</em><em>, </em><em>int</em><em> or </em><a class="reference internal" href="#psychopy_bbtk.tpad.TPad" title="psychopy_bbtk.tpad.TPad"><em>TPad</em></a>) – Value to resolve</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.sendMessage">
+<span class="sig-name descname"><span class="pre">sendMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoLog</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.sendMessage" title="Link to this definition">¶</a></dt>
+<dd><p>Send a command to the device (does not wait for a reply or sleep())</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.setMode">
+<span class="sig-name descname"><span class="pre">setMode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.setMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.setMode" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPad.unlockMode">
+<span class="sig-name descname"><span class="pre">unlockMode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPad.unlockMode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPad.unlockMode" title="Link to this definition">¶</a></dt>
+<dd><p>Unlock the mode, allowing <cite>setMode</cite> to be called and to have an effect.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Current mode</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+      <br/><a href="#" class="pull-right">Back to top</a>
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <span class="pull-right">
+      
+        
+<div id="sourcelink">
+  <a href="https://github.com/psychopy/psychopy/blob/master/docs/source/coder/TPad.rst"
+     rel="nofollow">Source</a>
+</div>
+      <br/>
+
+          &copy; 2002-2018 <a href="https://www.peirce.org.uk/">Jonathan Peirce</a><br/>
+          &copy; 2019 <a href="https://opensciencetools.org/">Open Science Tools Ltd.</a><br/><br/>
+        PsychoPy<sup>®</sup> and Pavlovia<sup>®</sup> are registered trademarks of Open Science Tools Ltd.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.3.7.<br/><br/>
+    </span>
+
+    <a href="http://www.nottingham.ac.uk/"><img src="../../_static/Nottingham Supported.png", alt="Uni of Nottingham" width=250></a>
+  </div>
+
+</footer>
+  </body>
+</html>

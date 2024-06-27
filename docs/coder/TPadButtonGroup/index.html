@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TPadButtonGroup &#8212; PsychoPy Example Plugin 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=536c50fe" />
+    <link rel="stylesheet" type="text/css" href="../../_static/psychopy.css?v=b9f4e6dd" />
+    <script src="../../_static/documentation_options.js?v=d20be8f5"></script>
+    <script src="../../_static/doctools.js?v=b682be12"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script src="../../_static/js/jquery-fix.js"></script>
+    <script src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="TPadPhotodiodeGroup" href="../TPadPhotodiodeGroup/" />
+    <link rel="prev" title="TPad" href="../TPad/" />
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-4089651-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-4089651-2');
+    </script>
+
+    <!-- Matomo -->
+    <script>
+      var _paq = window._paq = window._paq || [];
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(["setDocumentTitle", document.domain + "/" + document.title]);
+      _paq.push(["setCookieDomain", "*.psychopy.org"]);
+      _paq.push(["setDomains", ["*.psychopy.org","*.discourse.psychopy.org"]]);
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="//analytics.opensciencetools.org/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '3']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+    <noscript><p><img src="//analytics.opensciencetools.org/matomo.php?idsite=3&amp;rec=1" style="border:0;" alt="" /></p></noscript>
+    <!-- End Matomo Code -->
+
+
+  </head><body>
+
+<!-- The social media icon bar -->
+<div class="social-bar">
+  <a href="" class="github">
+    <i class="fab fa-github"></i></a>
+</div>
+
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand small-logo" href="../../">
+          <img src="../../_static/Psychopy Plugin Header Small.png" alt="PsychoPy Logo">
+        </a>
+        <a class="navbar-brand large-logo" href="../../">
+          <img src="../../_static/Psychopy Plugin Header Large.png" alt="PsychoPy Logo">
+        </a>
+        <!-- <span class="navbar-text navbar-version pull-right"><b></b></span> -->
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse w-100 pull-right">
+          <ul class="nav navbar-nav ml-auto">
+            <li><a href="../../">Home</a></li>
+            <li><a href="../../download/">Install</a></li>
+            
+            <li><a href="https://plugins.psychopy.org/directory.html" class="return-btn">plugins.psychopy.org</a></li>
+            
+              <!-- <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../">Documentation <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption" role="heading"><span class="caption-text">Added content for Coder</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../BBTKForcePad/">BBTKForcePad</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPad/">TPad</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TPadButtonGroup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPadPhotodiodeGroup/">TPadPhotodiodeGroup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../TPadVoiceKey/">TPadVoiceKey</a></li>
+</ul>
+</ul>
+</li> -->
+              
+            
+            <!--  -->
+            
+            
+          </ul>
+
+            <!-- 
+              
+<form class="navbar-form navbar-right" action="../../search/" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+             -->
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-9 content">
+      
+  <section id="tpadbuttongroup">
+<h1>TPadButtonGroup<a class="headerlink" href="#tpadbuttongroup" title="Link to this heading">¶</a></h1>
+<p>To import TPadButtonGroup, you can either use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">psychopy_bbtk.tpad</span> <span class="kn">import</span> <span class="n">TPadButtonGroup</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>or, any time after <cite>psychopy.plugins.activatePlugins</cite> has been called::</dt><dd><p>from psychopy.hardware.bbtk import TPadButtonGroup</p>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">psychopy_bbtk.tpad.</span></span><span class="sig-name descname"><span class="pre">TPadButtonGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.addListener">
+<span class="sig-name descname"><span class="pre">addListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listener</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">startLoop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.addListener" title="Link to this definition">¶</a></dt>
+<dd><p>Add a listener, which will receive all the same messages as this device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>listener</strong> (<em>str</em><em> or </em><em>psychopy.hardware.listener.BaseListener</em>) – Either a Listener object, or use one of the following strings to create one:
+- “liaison”: Create a LiaisonListener with DeviceManager.liaison as the server
+- “print”: Create a PrintListener with default settings
+- “log”: Create a LoggingListener with default settings</p></li>
+<li><p><strong>startLoop</strong> (<em>bool</em>) – If True, then upon adding the listener, start up an asynchronous loop to dispatch messages.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.clearListeners">
+<span class="sig-name descname"><span class="pre">clearListeners</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.clearListeners" title="Link to this definition">¶</a></dt>
+<dd><p>Remove any listeners from this device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if completed successfully</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.clearResponses">
+<span class="sig-name descname"><span class="pre">clearResponses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.clearResponses" title="Link to this definition">¶</a></dt>
+<dd><p>Clear any responses stored on this Device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if completed successfully</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.dispatchMessages">
+<span class="sig-name descname"><span class="pre">dispatchMessages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup.dispatchMessages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.dispatchMessages" title="Link to this definition">¶</a></dt>
+<dd><p>Dispatch messages from parent TPad to this button group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if request sent successfully</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.getAvailableDevices">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">getAvailableDevices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup.getAvailableDevices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.getAvailableDevices" title="Link to this definition">¶</a></dt>
+<dd><p>Get all available devices of this type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of dictionaries containing the parameters needed to initialise each device.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.getDeviceProfile">
+<span class="sig-name descname"><span class="pre">getDeviceProfile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.getDeviceProfile" title="Link to this definition">¶</a></dt>
+<dd><p>Generate a dictionary describing this device by finding the profile from
+getAvailableDevices which represents the same physical device as this object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary representing this device</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.getJSON">
+<span class="sig-name descname"><span class="pre">getJSON</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asString</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.getJSON" title="Link to this definition">¶</a></dt>
+<dd><p>Convert the output of getDeviceProfile to a JSON string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asString</strong> (<em>bool</em>) – If True, then the output will be converted to a string, otherwise will simply be a
+JSON-friendly dict.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON string (or JSON friendly dict) of getDeviceProfile.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str or dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.getListenerNames">
+<span class="sig-name descname"><span class="pre">getListenerNames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.getListenerNames" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.getResponses">
+<span class="sig-name descname"><span class="pre">getResponses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clear</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.getResponses" title="Link to this definition">¶</a></dt>
+<dd><p>Get responses which match a given on/off state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>bool</em><em> or </em><em>None</em>) – True to get button “on” responses, False to get button “off” responses, None to get all
+responses.</p></li>
+<li><p><strong>channel</strong> (<em>int</em><em>, </em><em>list</em>) – Which button or buttons to get responses from? Leave as None to get all buttons.</p></li>
+<li><p><strong>clear</strong> (<em>bool</em>) – Whether or not to remove responses matching <cite>state</cite> after retrieval.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of matching responses.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[ButtonResponse]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.getState">
+<span class="sig-name descname"><span class="pre">getState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">channel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.getState" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.hasUnfinishedMessage">
+<span class="sig-name descname"><span class="pre">hasUnfinishedMessage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup.hasUnfinishedMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.hasUnfinishedMessage" title="Link to this definition">¶</a></dt>
+<dd><p>Is the parent TPad waiting for an end-of-line character?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if there is a partial message waiting for an end-of-line</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.isSameDevice">
+<span class="sig-name descname"><span class="pre">isSameDevice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup.isSameDevice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.isSameDevice" title="Link to this definition">¶</a></dt>
+<dd><p>Determine whether this object represents the same physical device as a given other object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#psychopy_bbtk.tpad.TPadButtonGroup" title="psychopy_bbtk.tpad.TPadButtonGroup"><em>TPadButtonGroup</em></a><em>, </em><em>dict</em>) – Other TPadButtonGroup to compare against, or a dict of params (which must include
+<cite>port</cite> or <cite>pad</cite> as a key)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the two objects represent the same physical device</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.makeResponse">
+<span class="sig-name descname"><span class="pre">makeResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.makeResponse" title="Link to this definition">¶</a></dt>
+<dd><p>Programatically make a response on this device. The device won’t necessarily physically register the response,
+but it will be stored in this object same as an actual response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>example</strong> (<em>Function takes the same inputs as the response class for this device. For</em>)</p></li>
+<li><p><strong>KeyboardDevice</strong> (<em>in</em>)</p></li>
+<li><p><strong>inputs</strong></p></li>
+<li><p><strong>code</strong> (<em>are</em>)</p></li>
+<li><p><strong>name.</strong> (<em>tDown and</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response object created</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BaseResponse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.parseMessage">
+<span class="sig-name descname"><span class="pre">parseMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup.parseMessage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.parseMessage" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.receiveMessage">
+<span class="sig-name descname"><span class="pre">receiveMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.receiveMessage" title="Link to this definition">¶</a></dt>
+<dd><p>Method called when a parsed message is received. Includes code to send to any listeners and store the response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>message</strong> – Parsed message, should be an instance of this Device’s <cite>responseClass</cite></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if completed successfully</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.resetTimer">
+<span class="sig-name descname"><span class="pre">resetTimer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clock=&lt;psychopy.clock.MonotonicClock</span> <span class="pre">object&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/psychopy_bbtk/tpad/#TPadButtonGroup.resetTimer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.resetTimer" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="psychopy_bbtk.tpad.TPadButtonGroup.responseClass">
+<span class="sig-name descname"><span class="pre">responseClass</span></span><a class="headerlink" href="#psychopy_bbtk.tpad.TPadButtonGroup.responseClass" title="Link to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">ButtonResponse</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+      <br/><a href="#" class="pull-right">Back to top</a>
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <span class="pull-right">
+      
+        
+<div id="sourcelink">
+  <a href="https://github.com/psychopy/psychopy/blob/master/docs/source/coder/TPadButtonGroup.rst"
+     rel="nofollow">Source</a>
+</div>
+      <br/>
+
+          &copy; 2002-2018 <a href="https://www.peirce.org.uk/">Jonathan Peirce</a><br/>
+          &copy; 2019 <a href="https://opensciencetools.org/">Open Science Tools Ltd.</a><br/><br/>
+        PsychoPy<sup>®</sup> and Pavlovia<sup>®</sup> are registered trademarks of Open Science Tools Ltd.<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.3.7.<br/><br/>
+    </span>
+
+    <a href="http://www.nottingham.ac.uk/"><img src="../../_static/Nottingham Supported.png", alt="Uni of Nottingham" width=250></a>
+  </div>
+
+</footer>
+  </body>
+</html>
