@@ -60,6 +60,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         photodiode.BasePhotodiodeGroup.__init__(
             self, channels=channels, threshold=threshold, pos=pos, size=size, units=units
         )
+        # set to data collection mode
+        self.parent.setMode(3)
 
     def isSameDevice(self, other):
         """
@@ -204,6 +206,8 @@ class TPadButtonGroup(button.BaseButtonGroup):
         self.parent.nodes.append(self)
         # initialise base class
         button.BaseButtonGroup.__init__(self, channels=channels)
+        # set to data collection mode
+        self.parent.setMode(3)
 
     def isSameDevice(self, other):
         """
@@ -620,10 +624,13 @@ class TPad(sd.SerialDevice):
         return valid, avg
 
     def resetTimer(self, clock=logging.defaultClock):
-        # make sure we're in mode 3
-        self.setMode(0)
-        # send reset command
-        self.sendMessage("REST")
+        if self.getMode() == 3:
+            # if in mode 3, set using R so as not to disrupt data collection
+            self.sendMessage("R")
+        else:
+            # otherwise, switch to mode 0 and use REST
+            self.setMode(0)
+            self.sendMessage("REST")
         # store time
         self._lastTimerReset = clock.getTime(format=float)
         # get returned val
