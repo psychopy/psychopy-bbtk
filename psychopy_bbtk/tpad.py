@@ -5,6 +5,7 @@ from psychopy.tools import systemtools as st
 import serial
 import re
 import sys
+import time
 
 # possible values for self.channel
 channelCodes = {
@@ -106,7 +107,9 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         self.parent.setMode(0)
         # send command to set threshold
         self.parent.sendMessage(f"AAO{channel+1} {int(threshold)}")
-        self.parent.pause()
+        # force a sleep for diode to settle
+        time.sleep(0.1)
+        # get 0 or 1 according to light level
         resp = self.parent.awaitResponse(timeout=0.1)
         # with this threshold, is the photodiode returning True?
         measurement = None
