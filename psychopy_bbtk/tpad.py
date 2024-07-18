@@ -523,8 +523,6 @@ class TPad(sd.SerialDevice):
         self._mode = mode
         # exit out of whatever mode we're in (effectively set it to 0)
         self.com.write(b"X")
-        # send an eol to make sure that X isn't stuck in the buffer
-        self.sendMessage("")
         self.awaitResponse()
         if mode > 0:
             # set mode
