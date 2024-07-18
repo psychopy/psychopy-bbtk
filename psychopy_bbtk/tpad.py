@@ -184,7 +184,6 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         self.parent.lockMode()
         # continue as normal
         resp = photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
-        self._setThreshold(0, channel=1)
         # set back to mode 3
         self.parent.unlockMode()
         self.parent.setMode(3)
