@@ -5,6 +5,7 @@ from psychopy.tools import systemtools as st
 import serial
 import re
 import sys
+import time
 
 # possible values for self.channel
 channelCodes = {
