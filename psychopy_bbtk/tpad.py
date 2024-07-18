@@ -523,6 +523,9 @@ class TPad(sd.SerialDevice):
         # skip if mode is locked
         if self._modeLock:
             return
+        # skip if already in desired mode
+        if self._mode == mode:
+            return
         # store requested mode
         self._mode = mode
         # exit out of whatever mode we're in (effectively set it to 0)
