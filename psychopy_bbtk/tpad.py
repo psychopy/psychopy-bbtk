@@ -584,8 +584,7 @@ class TPad(sd.SerialDevice):
         # call help and get response
         self.sendMessage("FIRM")
         resp = self.awaitResponse(multiline=True)
-        # set to mode 3
-        self.setMode(3)
+
         return bool(resp)
 
     def checkSpeed(self, target=5/1000):
