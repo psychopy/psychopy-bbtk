@@ -628,9 +628,10 @@ class TPad(sd.SerialDevice):
 
     def resetTimer(self, clock=logging.defaultClock):
         # make sure we're in mode 3
-        if self.getMode() != 3:
-            self.setMode(3)
+        self.setMode(0)
         # send reset command
-        self.sendMessage("R")
+        self.sendMessage("REST")
         # store time
         self._lastTimerReset = clock.getTime(format=float)
+        # get returned val
+        self.awaitResponse(timeout=0.1)
