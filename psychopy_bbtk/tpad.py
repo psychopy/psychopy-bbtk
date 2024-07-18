@@ -534,6 +534,22 @@ class TPad(sd.SerialDevice):
             self.awaitResponse(timeout=0.1)
 
     def getMode(self):
+        if self._mode is None:
+            # if mode not set before, get it from device
+            self.com.write(b"Z")
+            resp = self.awaitResponse(timeout=0.1)
+            # try to get mode from response
+            try:
+                self._mode = int(resp.strip())
+            except:
+                # if this fails, just warn and keep as None
+                logging.warn(
+                    "Could not get current mode from TPad, expected a 0, 1, 2 or 3 but got: {}. "
+                    "Reverting to None."
+                    .format(resp)
+                )
+                pass
+        
         return self._mode
 
     def lockMode(self):
