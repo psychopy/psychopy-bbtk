@@ -115,6 +115,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
                 measurement = True
             if resp.strip() == "0":
                 measurement = False
+        # store threshold
+        self.threshold[channel] = threshold
         # return to sampling mode
         self.parent.setMode(3)
 
