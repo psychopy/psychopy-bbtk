@@ -524,11 +524,11 @@ class TPad(sd.SerialDevice):
         self._mode = mode
         # exit out of whatever mode we're in (effectively set it to 0)
         self.com.write(b"X")
-        self.awaitResponse()
+        self.awaitResponse(timeout=0.1)
         if mode > 0:
             # set mode
             self.sendMessage(f"MOD{mode}")
-            self.awaitResponse()
+            self.awaitResponse(timeout=0.1)
 
     def getMode(self):
         return self._mode
