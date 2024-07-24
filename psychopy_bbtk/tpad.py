@@ -610,9 +610,19 @@ class TPad(sd.SerialDevice):
             # send commands
             self.sendMessage("FIRM")
             # what did we get?
-            self.awaitResponse()
+            resp = self.awaitResponse()
             # how long did it take?
-            times.append(time.time() - start)
+            dur = time.time() - start
+            # if we got a response, store how long
+            if resp is not None:
+                times.append(dur)
+            else:
+                # print warning that we got no response
+                logging.warn(
+                    f"Repeatedly sent `FIRM` to TPad and got no response on attempt {n+1}. "
+                )
+            # give the box time to rest
+            time.sleep(0.01)
         # average times
         avg = sum(times) / len(times)
         # return to data mode
@@ -620,6 +630,12 @@ class TPad(sd.SerialDevice):
         self.awaitResponse()
         # are we below the target?
         valid = avg <= target
+        # warn if we are
+        if not valid:
+            logging.warn(
+                f"Expected TPad to respond to `FIRM` within {target}s, but average response time "
+                f"was {avg}s."
+            )
 
         return valid, avg
 
