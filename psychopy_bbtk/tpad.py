@@ -178,12 +178,12 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         return resp
 
-    def findPhotodiode(self, win, channel=None):
+    def findPhotodiode(self, win, channel=None, retryLimit=5):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel)
+        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel, retryLimit=5)
 
     def findThreshold(self, win, channel=None):
         # set mode to 0 and lock it so mode doesn't change during setThreshold calls
