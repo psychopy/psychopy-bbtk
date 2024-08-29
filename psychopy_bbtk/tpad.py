@@ -466,7 +466,7 @@ class TPad(sd.SerialDevice):
                     if device == "C" and not isinstance(node, TPadPhotodiodeGroup):
                         continue
                     # if device is M, dispatch only to voice keys
-                    if device == "M" and not isinstance(node, TPadVoicekey):
+                    if device == "M" and not isinstance(node, TPadVoiceKey):
                         continue
                     # dispatch to node
                     message = node.parseMessage(parts)
