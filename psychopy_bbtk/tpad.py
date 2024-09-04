@@ -584,7 +584,9 @@ class TPad(sd.SerialDevice):
         # call FIRM (firmware version) and get response
         self.sendMessage("FIRM")
         resp = self.awaitResponse(multiline=True)
-        logging.debug(f"Connected to TPad device, which reports its firmware version as: {resp}")
+        logging.info(
+            f"TPad device on {self.portString} is awake, it reports its firmware version as: {resp}"
+        )
 
         return bool(resp)
 
