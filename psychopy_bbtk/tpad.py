@@ -301,7 +301,7 @@ class TPadVoiceKey:
 
 
 class TPad(sd.SerialDevice):
-    name = "TPad"
+    name = b"TPad"
 
     def __init__(
             self, port=None, baudrate=115200,
@@ -426,6 +426,15 @@ class TPad(sd.SerialDevice):
         # add listener to all nodes
         for node in self.nodes:
             node.addListener(listener)
+    
+    def sendMessage(self, message, autoLog=True):
+        # dispatch any messages on the buffer to completion before sending message
+        maxIter = 5
+        while maxIter >= 0 and (self.com.in_waiting or self._lastLine):
+            self.dispatchMessages()
+            self.pause()
+        
+        return sd.SerialDevice.sendMessage(self, message, autoLog)
 
     def dispatchMessages(self):
         # do nothing if there's already a dispatch in progress
