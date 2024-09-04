@@ -301,6 +301,8 @@ class TPadVoiceKey:
 
 
 class TPad(sd.SerialDevice):
+    name = "TPad"
+
     def __init__(
             self, port=None, baudrate=115200,
             byteSize=8, stopBits=1,
@@ -472,7 +474,7 @@ class TPad(sd.SerialDevice):
                     message = node.parseMessage(parts)
                     node.receiveMessage(message)
             else:
-                logging.debug(f"Received unparsable message from TPad: {line}")
+                logging.debug(f"Received unparsable message from TPad: {repr(line)}")
         # mark that a dispatch has finished
         self._dispatchInProgress = False
     
