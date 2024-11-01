@@ -108,7 +108,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # enter command mode
         self.parent.setMode(0)
         # send command to set threshold
-        self.parent.sendMessage(f"AAO{channel+1} {int(threshold)}")
+        self.parent.sendMessage(f"AAO{channel+1} {int(threshold * 255)}")
         # force a sleep for diode to settle
         time.sleep(0.1)
         # get 0 or 1 according to light level
