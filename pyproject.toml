@@ -28,6 +28,9 @@ urls.homepage = "https://github.com/psychopy/psychopy-bbtk"
 urls.changelog = "https://github.com/psychopy/psychopy-bbtk/blob/main/CHANGELOG.txt"
 urls.documentation = "https://pages.github.com/psychopy/psychopy-bbtk"
 urls.repository = "https://github.com/psychopy/psychopy-bbtk"
+dependencies = [
+  "ftd2xx"
+]
 
 [tool.setuptools.packages.find]
 where = ["",]

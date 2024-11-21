@@ -7,6 +7,16 @@ import re
 import sys
 import time
 
+
+# check whether FTDI driver is installed
+hasDriver = False
+try:
+    import ftd2xx
+    hasDriver = True
+except FileNotFoundError:
+    pass
+
+
 # possible values for self.channel
 channelCodes = {
     'A': "Buttons",
@@ -311,6 +321,13 @@ class TPad(sd.SerialDevice):
             maxAttempts=1, pauseDuration=1/1000,
             checkAwake=True
     ):
+        # error if there's no ftdi driver
+        if not hasDriver:
+            raise ModuleNotFoundError(
+                "Could not connect to BBTK device as your computer is missing a necessary "
+                "hardware driver. You should be able to find the correct driver for your operating "
+                "system here: https://ftdichip.com/drivers/vcp-drivers/"
+            )
         # get port if not given
         if port is None:
             port = self._detectComPort()[0]
