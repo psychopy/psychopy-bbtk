@@ -6,6 +6,11 @@ import serial
 import re
 import sys
 import time
+# voicekey is only available from 2015.1.0 onwards, so import with a safe fallback
+try:
+    from psychopy.hardware.voicekey import BaseVoiceKeyGroup, VoiceKeyResponse
+except ImportError:
+    from psychopy.hardware.base import BaseResponseDevice as BaseVoiceKeyGroup, BaseResponse as VoiceKeyResponse
 
 
 # check whether FTDI driver is installed
@@ -306,8 +311,111 @@ class TPadButtonGroup(button.BaseButtonGroup):
 
 
 class TPadVoiceKey:
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(self, pad, channels=1, threshold=None):
+        _requestedPad = pad
+        # get associated tpad
+        self.parent = TPad.resolve(pad)
+        # reference self in pad
+        self.parent.nodes.append(self)
+        # initialise base class
+        BaseVoiceKeyGroup.__init__(
+            self, channels=channels, threshold=threshold
+        )
+        # set to data collection mode
+        self.parent.setMode(3)
+    
+    def resetTimer(self, clock=logging.defaultClock):
+        self.parent.resetTimer(clock=clock)
+    
+    def _setThreshold(self, threshold, channel=None):
+        """
+        Device-specific threshold setting method. This will be called by `setThreshold` and should 
+        be overloaded by child classes of BaseVoiceKey.
+
+        Parameters
+        ----------
+        threshold : int
+            Threshold at which to register a VoiceKey response, with 0 being the lowest possible 
+            volume and 255 being the highest.
+        channel : int
+            Channel to set the threshold for (if applicable to device)
+
+        Returns
+        ------
+        bool
+            True if current decibel level is above the threshold.
+        """
+        raise NotImplementedError()
+    
+    def dispatchMessages(self):
+        self.parent.dispatchMessages()
+    
+    def hasUnfinishedMessage(self):
+        """
+        Is the parent TPad waiting for an end-of-line character?
+        
+        Returns
+        -------
+        bool
+            True if there is a partial message waiting for an end-of-line
+        """
+        return self.parent.hasUnfinishedMessage()
+    
+    def parseMessage(self):
+        # if given a string, split according to regex
+        if isinstance(message, str):
+            message = splitTPadMessage(message)
+        device, state, channel, time = message
+        # convert state to bool
+        if state == "P":
+            state = True
+        elif state == "R":
+            state = False
+        # create PhotodiodeResponse object
+        resp = VoiceKeyResponse(
+            t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
+        )
+
+        return resp
+    
+    def isSameDevice(self, other):
+        """
+        Determine whether this object represents the same physical device as a given other object.
+
+        Parameters
+        ----------
+        other : TPadPhotodiodeGroup, dict
+            Other TPadPhotodiodeGroup to compare against, or a dict of params (which much include
+            `port` or `pad` as a key)
+
+        Returns
+        -------
+        bool
+            True if the two objects represent the same physical device
+        """
+        if isinstance(other, type(self)):
+            # if given another TPadButtonGroup, compare parent boxes
+            other = other.parent
+        elif isinstance(other, dict) and "pad" in other:
+            # create copy of dict so we don't affect the original
+            other = other.copy()
+            # if given a dict, make sure we have a `port` rather than a `pad`
+            other['port'] = other['pad']
+        # use parent's comparison method
+        return self.parent.isSameDevice(other)
+
+    @staticmethod
+    def getAvailableDevices():
+        devices = []
+        # iterate through profiles of all serial port devices
+        for profile in TPad.getAvailableDevices():
+            devices.append({
+                'deviceName': profile['deviceName'] + "_voicekey",
+                'pad': profile['port'],
+                'channels': 1,
+            })
+
+        return devices
 
 
 class TPad(sd.SerialDevice):
