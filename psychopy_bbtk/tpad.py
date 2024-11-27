@@ -16,7 +16,7 @@ except ImportError:
 # check whether FTDI driver is installed
 hasDriver = False
 try:
-    # import ftd2xx
+    import ftd2xx
     hasDriver = True
 except FileNotFoundError:
     pass
