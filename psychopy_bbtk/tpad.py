@@ -16,7 +16,7 @@ except ImportError:
 # check whether FTDI driver is installed
 hasDriver = False
 try:
-    import ftd2xx
+    # import ftd2xx
     hasDriver = True
 except FileNotFoundError:
     pass
@@ -310,7 +310,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
         self.parent.resetTimer(clock=clock)
 
 
-class TPadVoiceKey:
+class TPadVoiceKey(BaseVoiceKeyGroup):
     def __init__(self, pad, channels=1, threshold=None):
         _requestedPad = pad
         # get associated tpad
@@ -345,7 +345,29 @@ class TPadVoiceKey:
         bool
             True if current decibel level is above the threshold.
         """
-        raise NotImplementedError()
+        if threshold is None:
+            return
+        # enter command mode
+        self.parent.setMode(0)
+        # send command to set threshold
+        self.parent.sendMessage(f"AAVK{channel+1} {int(threshold)}")
+        # force a sleep for diode to settle
+        time.sleep(0.1)
+        # get 0 or 1 according to light level
+        resp = self.parent.awaitResponse(timeout=0.1)
+        # with this threshold, is the photodiode returning True?
+        measurement = None
+        if resp is not None:
+            if resp.strip() == "1":
+                measurement = True
+            if resp.strip() == "0":
+                measurement = False
+        # store threshold
+        self.threshold[channel] = threshold
+        # return to sampling mode
+        self.parent.setMode(3)
+
+        return measurement
     
     def dispatchMessages(self):
         self.parent.dispatchMessages()
@@ -361,7 +383,7 @@ class TPadVoiceKey:
         """
         return self.parent.hasUnfinishedMessage()
     
-    def parseMessage(self):
+    def parseMessage(self, message):
         # if given a string, split according to regex
         if isinstance(message, str):
             message = splitTPadMessage(message)
