@@ -11,7 +11,13 @@ try:
     from psychopy.hardware.voicekey import BaseVoiceKeyGroup, VoiceKeyResponse
 except ImportError:
     from psychopy.hardware.base import BaseResponseDevice as BaseVoiceKeyGroup, BaseResponse as VoiceKeyResponse
-
+# DeviceNotFoundError is only available from 2025.1.0 onwards, so import with a safe fallback
+try:
+    from psychopy.hardware.exceptions import DeviceNotConnectedError
+except ImportError:
+    class DeviceNotConnectedError(ConnectionError):
+        def __init__(self, msg, deviceClass=None, context=None, *args):
+            ConnectionError.__init__(self, msg)
 
 # check whether FTDI driver is installed
 hasDriver = False
@@ -458,9 +464,28 @@ class TPad(sd.SerialDevice):
                 "hardware driver. You should be able to find the correct driver for your operating "
                 "system here: https://ftdichip.com/drivers/vcp-drivers/"
             )
-        # get port if not given
+        # get ports with a TPad connected
+        possiblePorts = self._detectComPort()
+        # error if there are none
+        if not possiblePorts:
+            raise DeviceNotConnectedError(
+                (
+                    "Could not find any connected TPad. Try checking the USB cable or restarting "
+                    "your PC."
+                ),
+                deviceClass=TPad
+            )
+        # if no port given, take first valid one
         if port is None:
-            port = self._detectComPort()[0]
+            port = possiblePorts[0]
+        # if port doesn't have a TPad on, error
+        if port not in possiblePorts:
+            raise DeviceNotConnectedError(
+                (
+                    "Could not find a TPad on {port}, but did find TPad(s) on: {possiblePorts}.",
+                ).format(port=port, possiblePorts=possiblePorts),
+                deviceClass=TPad
+            )
         # initial value for last timer reset
         self._lastTimerReset = logging.defaultClock._timeAtLastReset
         # dict of responses by timestamp
@@ -663,11 +688,6 @@ class TPad(sd.SerialDevice):
     def _detectComPort():
         # find available devices
         available = TPad.getAvailableDevices()
-        # error if there are none
-        if not available:
-            raise ConnectionError(
-                "Could not find any TPad."
-            )
         # get all available ports
         return [profile['port'] for profile in available]
 
