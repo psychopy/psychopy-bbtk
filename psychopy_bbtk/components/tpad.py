@@ -2,7 +2,7 @@ from psychopy.experiment import Param, getInitVals
 from psychopy.localization import _translate
 from psychopy.experiment.plugins import DeviceBackend
 from psychopy.experiment.components.buttonBox import ButtonBoxComponent
-from psychopy.experiment.routines.photodiodeValidator import PhotodiodeValidatorRoutine
+from psychopy.experiment.routines.visualValidator import VisualValidatorRoutine
 
 
 def getTPadPorts():
@@ -23,7 +23,7 @@ def getTPadPorts():
 
 class TPadPhotodiodeValidatorBackend(DeviceBackend):
     # which component is this backend for?
-    component = PhotodiodeValidatorRoutine
+    component = VisualValidatorRoutine
     # what value should Builder use for this backend?
     key = "tpad"
     # what label should be displayed by Builder for this backend?
