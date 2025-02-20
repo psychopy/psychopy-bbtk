@@ -1,4 +1,4 @@
-from psychopy.hardware import base, serialdevice as sd, photodiode, button
+from psychopy.hardware import base, serialdevice as sd, lightsensor, button
 from psychopy.hardware.manager import deviceManager, DeviceManager, ManagedDeviceError
 from psychopy import logging, layout
 from psychopy.tools import systemtools as st
@@ -70,7 +70,7 @@ def splitTPadMessage(message):
     return re.match(messageFormat, message).groups()
 
 
-class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
+class TPadLightSensorGroup(lightsensor.BaseLightSensorGroup):
     def __init__(self, pad, channels, threshold=None, pos=None, size=None, units=None):
         _requestedPad = pad
         # get associated tpad
@@ -78,7 +78,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # reference self in pad
         self.parent.nodes.append(self)
         # initialise base class
-        photodiode.BasePhotodiodeGroup.__init__(
+        lightsensor.BaseLightSensorGroup.__init__(
             self, channels=channels, threshold=threshold, pos=pos, size=size, units=units
         )
         # set to data collection mode
@@ -90,8 +90,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         Parameters
         ----------
-        other : TPadPhotodiodeGroup, dict
-            Other TPadPhotodiodeGroup to compare against, or a dict of params (which much include
+        other : TPadLightSensorGroup, dict
+            Other TPadLightSensorGroup to compare against, or a dict of params (which much include
             `port` or `pad` as a key)
 
         Returns
@@ -116,7 +116,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['deviceName'] + "_photodiodes",
+                'deviceName': profile['deviceName'] + "_lightsensors",
                 'pad': profile['port'],
                 'channels': 2,
             })
@@ -134,7 +134,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         time.sleep(0.1)
         # get 0 or 1 according to light level
         resp = self.parent.awaitResponse(timeout=0.1)
-        # with this threshold, is the photodiode returning True?
+        # with this threshold, is the sensor returning True?
         measurement = None
         if resp is not None:
             if resp.strip() == "1":
@@ -153,7 +153,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
     def dispatchMessages(self):
         """
-        Dispatch messages from parent TPad to this photodiode group
+        Dispatch messages from parent TPad to this light sensor group
 
         Returns
         -------
@@ -192,26 +192,26 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # assert number == str(self.number), (
         #     "TPadPhotometer {} received message intended for photometer {}: {}"
         # ).format(self.number, number, message)
-        # create PhotodiodeResponse object
-        resp = photodiode.PhotodiodeResponse(
+        # create LightSensorResponse object
+        resp = lightsensor.LightSensorResponse(
             t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
         )
 
         return resp
 
-    def findPhotodiode(self, win, channel=None, retryLimit=5):
+    def findSensor(self, win, channel=None, retryLimit=5):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel, retryLimit=5)
+        return lightsensor.BaseLightSensorGroup.findSensor(self, win, channel, retryLimit=5)
 
     def findThreshold(self, win, channel=None):
         # set mode to 0 and lock it so mode doesn't change during setThreshold calls
         self.parent.setMode(0)
         self.parent.lockMode()
         # continue as normal
-        resp = photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
+        resp = lightsensor.BaseLightSensorGroup.findThreshold(self, win, channel)
         # set back to mode 3
         self.parent.unlockMode()
         self.parent.setMode(3)
@@ -361,7 +361,7 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
         time.sleep(0.1)
         # get 0 or 1 according to light level
         resp = self.parent.awaitResponse(timeout=0.1)
-        # with this threshold, is the photodiode returning True?
+        # with this threshold, is the sensor returning True?
         measurement = None
         if resp is not None:
             if resp.strip() == "1":
@@ -399,7 +399,7 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
             state = True
         elif state == "R":
             state = False
-        # create PhotodiodeResponse object
+        # create VoiceKeyResponse object
         resp = VoiceKeyResponse(
             t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
         )
@@ -412,8 +412,8 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
 
         Parameters
         ----------
-        other : TPadPhotodiodeGroup, dict
-            Other TPadPhotodiodeGroup to compare against, or a dict of params (which much include
+        other : TPadVoiceKeyGroup, dict
+            Other TPadVoiceKeyGroup to compare against, or a dict of params (which much include
             `port` or `pad` as a key)
 
         Returns
@@ -645,8 +645,8 @@ class TPad(sd.SerialDevice):
                     # if device is A, dispatch only to buttons
                     if device == "A" and not isinstance(node, TPadButtonGroup):
                         continue
-                    # if device is C, dispatch only to photodiodes
-                    if device == "C" and not isinstance(node, TPadPhotodiodeGroup):
+                    # if device is C, dispatch only to sensors
+                    if device == "C" and not isinstance(node, TPadLightSensorGroup):
                         continue
                     # if device is M, dispatch only to voice keys
                     if device == "M" and not isinstance(node, TPadVoiceKey):

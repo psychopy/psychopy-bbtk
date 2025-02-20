@@ -21,7 +21,7 @@ def getTPadPorts():
     return ports
 
 
-class TPadPhotodiodeValidatorBackend(DeviceBackend):
+class TPadVisualValidatorBackend(DeviceBackend):
     # which component is this backend for?
     component = VisualValidatorRoutine
     # what value should Builder use for this backend?
@@ -29,7 +29,7 @@ class TPadPhotodiodeValidatorBackend(DeviceBackend):
     # what label should be displayed by Builder for this backend?
     label = _translate("BBTK TPad")
     # what hardware classes are relevant to this backend?
-    deviceClasses = ["psychopy_bbtk.tpad.TPadPhotodiodeGroup"]
+    deviceClasses = ["psychopy_bbtk.tpad.TPadLightSensorGroup"]
 
     def getParams(self):
         """

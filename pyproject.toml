@@ -50,9 +50,10 @@ tests = [
 
 [project.entry-points."psychopy.experiment.components"]
 TPadButtonBoxBackend = "psychopy_bbtk.components.tpad:TPadButtonBoxBackend"
+TPadVisualValidatorBackend = "psychopy_bbtk.components.tpad:TPadVisualValidatorBackend"
 
 [project.entry-points."psychopy.hardware.bbtk"]
-TPadPhotodiodeGroup = "psychopy_bbtk.tpad:TPadPhotodiodeGroup"
+TPadLightSensorGroup = "psychopy_bbtk.tpad:TPadLightSensorGroup"
 TPadButtonGroup = "psychopy_bbtk.tpad:TPadButtonGroup"
 TPadVoiceKey = "psychopy_bbtk.tpad:TPadVoiceKey"
 TPad = "psychopy_bbtk.tpad:TPad"

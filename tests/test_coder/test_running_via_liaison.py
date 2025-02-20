@@ -2,7 +2,7 @@ from psychopy.tests.test_liaison import TestLiaison, runInLiaison
 
 
 class TestBBTKLiaison(TestLiaison):
-    def test_tpad_photodiode(self):
+    def test_tpad_lightsensor(self):
         """
         Test that a TPadPhotodiodeGroup can be set up and calibrated via Liaison
         """
@@ -18,6 +18,6 @@ class TestBBTKLiaison(TestLiaison):
         )
         runInLiaison(
             self.server, self.protocol, "DeviceManager", "callDeviceMethod",
-            "diode", "findPhotodiode",
+            "diode", "findSensor",
             "session.win", "1"
         )
