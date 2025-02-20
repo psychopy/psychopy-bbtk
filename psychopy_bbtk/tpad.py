@@ -8,9 +8,9 @@ import sys
 import time
 # voicekey is only available from 2015.1.0 onwards, so import with a safe fallback
 try:
-    from psychopy.hardware.voicekey import BaseVoiceKeyGroup, VoiceKeyResponse
+    from psychopy.hardware.soundsensor import BaseSoundSensorGroup, SoundSensorResponse
 except ImportError:
-    from psychopy.hardware.base import BaseResponseDevice as BaseVoiceKeyGroup, BaseResponse as VoiceKeyResponse
+    from psychopy.hardware.base import BaseResponseDevice as BaseSoundSensorGroup, BaseResponse as SoundSensorResponse
 # DeviceNotFoundError is only available from 2025.1.0 onwards, so import with a safe fallback
 try:
     from psychopy.hardware.exceptions import DeviceNotConnectedError
@@ -316,7 +316,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
         self.parent.resetTimer(clock=clock)
 
 
-class TPadVoiceKey(BaseVoiceKeyGroup):
+class TPadSoundSensor(BaseSoundSensorGroup):
     def __init__(self, pad, channels=1, threshold=None):
         _requestedPad = pad
         # get associated tpad
@@ -324,7 +324,7 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
         # reference self in pad
         self.parent.nodes.append(self)
         # initialise base class
-        BaseVoiceKeyGroup.__init__(
+        BaseSoundSensorGroup.__init__(
             self, channels=channels, threshold=threshold
         )
         # set to data collection mode
@@ -336,12 +336,12 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
     def _setThreshold(self, threshold, channel=None):
         """
         Device-specific threshold setting method. This will be called by `setThreshold` and should 
-        be overloaded by child classes of BaseVoiceKey.
+        be overloaded by child classes of BaseSoundSensor.
 
         Parameters
         ----------
         threshold : int
-            Threshold at which to register a VoiceKey response, with 0 being the lowest possible 
+            Threshold at which to register a SoundSensor response, with 0 being the lowest possible 
             volume and 255 being the highest.
         channel : int
             Channel to set the threshold for (if applicable to device)
@@ -399,8 +399,8 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
             state = True
         elif state == "R":
             state = False
-        # create VoiceKeyResponse object
-        resp = VoiceKeyResponse(
+        # create SoundSensorResponse object
+        resp = SoundSensorResponse(
             t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
         )
 
@@ -412,8 +412,8 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
 
         Parameters
         ----------
-        other : TPadVoiceKeyGroup, dict
-            Other TPadVoiceKeyGroup to compare against, or a dict of params (which much include
+        other : TPadSoundSensorGroup, dict
+            Other TPadSoundSensorGroup to compare against, or a dict of params (which much include
             `port` or `pad` as a key)
 
         Returns
@@ -649,7 +649,7 @@ class TPad(sd.SerialDevice):
                     if device == "C" and not isinstance(node, TPadLightSensorGroup):
                         continue
                     # if device is M, dispatch only to voice keys
-                    if device == "M" and not isinstance(node, TPadVoiceKey):
+                    if device == "M" and not isinstance(node, TPadSoundSensor):
                         continue
                     # dispatch to node
                     message = node.parseMessage(parts)
