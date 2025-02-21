@@ -1,16 +1,30 @@
-from psychopy.hardware import base, serialdevice as sd, lightsensor, button
-from psychopy.hardware.manager import deviceManager, DeviceManager, ManagedDeviceError
-from psychopy import logging, layout
+from psychopy.hardware import serialdevice as sd, lightsensor, button
+from psychopy.hardware.base import BaseDevice, BaseResponseDevice
+from psychopy.hardware.manager import DeviceManager, ManagedDeviceError
+from psychopy import logging
 from psychopy.tools import systemtools as st
-import serial
 import re
 import sys
 import time
-# voicekey is only available from 2015.1.0 onwards, so import with a safe fallback
+
+# import hardware classes in a version-safe way
+try:
+    from psychopy.hardware.button import BaseButtonGroup, ButtonResponse
+except ImportError:
+    BaseButtonGroup = BaseDevice
+    ButtonResponse = BaseResponseDevice
 try:
     from psychopy.hardware.soundsensor import BaseSoundSensorGroup, SoundSensorResponse
 except ImportError:
-    from psychopy.hardware.base import BaseResponseDevice as BaseSoundSensorGroup, BaseResponse as SoundSensorResponse
+    BaseSoundSensorGroup = BaseDevice
+    SoundSensorResponse = BaseResponseDevice
+try:
+    from psychopy.hardware.lightsensor import BaseLightSensorGroup, LightSensorResponse
+except ImportError:
+    BaseLightSensorGroup = BaseDevice
+    LightSensorResponse = BaseResponseDevice
+
+
 # DeviceNotFoundError is only available from 2025.1.0 onwards, so import with a safe fallback
 try:
     from psychopy.hardware.exceptions import DeviceNotConnectedError
@@ -316,7 +330,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
         self.parent.resetTimer(clock=clock)
 
 
-class TPadSoundSensor(BaseSoundSensorGroup):
+class TPadSoundSensorGroup(BaseSoundSensorGroup):
     def __init__(self, pad, channels=1, threshold=None):
         _requestedPad = pad
         # get associated tpad
@@ -413,7 +427,7 @@ class TPadSoundSensor(BaseSoundSensorGroup):
         Parameters
         ----------
         other : TPadSoundSensorGroup, dict
-            Other TPadSoundSensorGroup to compare against, or a dict of params (which much include
+            Other TPadSoundSensorGroupGroup to compare against, or a dict of params (which much include
             `port` or `pad` as a key)
 
         Returns
@@ -649,7 +663,7 @@ class TPad(sd.SerialDevice):
                     if device == "C" and not isinstance(node, TPadLightSensorGroup):
                         continue
                     # if device is M, dispatch only to voice keys
-                    if device == "M" and not isinstance(node, TPadSoundSensor):
+                    if device == "M" and not isinstance(node, TPadSoundSensorGroup):
                         continue
                     # dispatch to node
                     message = node.parseMessage(parts)

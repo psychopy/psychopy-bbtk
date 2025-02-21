@@ -1,15 +1,15 @@
-TPadSoundSensor
+TPadSoundSensorGroup
 -------------------------------
 
-To import TPadSoundSensor, you can either use::
+To import TPadSoundSensorGroup, you can either use::
 
-    from psychopy_bbtk.tpad import TPadSoundSensor
+    from psychopy_bbtk.tpad import TPadSoundSensorGroup
 
 or, any time after `psychopy.plugins.activatePlugins` has been called::
-    from psychopy.hardware.bbtk import TPadSoundSensor
+    from psychopy.hardware.bbtk import TPadSoundSensorGroup
 
 
-.. autoclass:: psychopy_bbtk.tpad.TPadSoundSensor
+.. autoclass:: psychopy_bbtk.tpad.TPadSoundSensorGroup
     :members:
     :undoc-members:
     :inherited-members:
