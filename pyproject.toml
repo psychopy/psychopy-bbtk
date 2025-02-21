@@ -49,11 +49,14 @@ tests = [
 ]
 
 [project.entry-points."psychopy.experiment.components"]
+TPadVisualValidatorBackend = "psychopy_bbtk.components.tpad:TPadVisualValidatorBackend"
+TPadAudioValidatorBackend = "psychopy_bbtk.components.tpad:TPadAudioValidatorBackend"
 TPadButtonBoxBackend = "psychopy_bbtk.components.tpad:TPadButtonBoxBackend"
+TPadSoundSensorBackend = "psychopy_bbtk.components.tpad:TPadSoundSensorBackend"
 
 [project.entry-points."psychopy.hardware.bbtk"]
-TPadPhotodiodeGroup = "psychopy_bbtk.tpad:TPadPhotodiodeGroup"
+TPadLightSensorGroup = "psychopy_bbtk.tpad:TPadLightSensorGroup"
+TPadSoundSensorGroup = "psychopy_bbtk.tpad:TPadSoundSensorGroup"
 TPadButtonGroup = "psychopy_bbtk.tpad:TPadButtonGroup"
-TPadVoiceKey = "psychopy_bbtk.tpad:TPadVoiceKey"
 TPad = "psychopy_bbtk.tpad:TPad"
 BBTKForcePad = "psychopy_bbtk.forcePad:BBTKForcePad"

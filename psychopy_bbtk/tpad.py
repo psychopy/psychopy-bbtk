@@ -1,16 +1,30 @@
-from psychopy.hardware import base, serialdevice as sd, photodiode, button
-from psychopy.hardware.manager import deviceManager, DeviceManager, ManagedDeviceError
-from psychopy import logging, layout
+from psychopy.hardware import serialdevice as sd, lightsensor, button
+from psychopy.hardware.base import BaseDevice, BaseResponseDevice
+from psychopy.hardware.manager import DeviceManager, ManagedDeviceError
+from psychopy import logging
 from psychopy.tools import systemtools as st
-import serial
 import re
 import sys
 import time
-# voicekey is only available from 2015.1.0 onwards, so import with a safe fallback
+
+# import hardware classes in a version-safe way
 try:
-    from psychopy.hardware.voicekey import BaseVoiceKeyGroup, VoiceKeyResponse
+    from psychopy.hardware.button import BaseButtonGroup, ButtonResponse
 except ImportError:
-    from psychopy.hardware.base import BaseResponseDevice as BaseVoiceKeyGroup, BaseResponse as VoiceKeyResponse
+    BaseButtonGroup = BaseDevice
+    ButtonResponse = BaseResponseDevice
+try:
+    from psychopy.hardware.soundsensor import BaseSoundSensorGroup, SoundSensorResponse
+except ImportError:
+    BaseSoundSensorGroup = BaseDevice
+    SoundSensorResponse = BaseResponseDevice
+try:
+    from psychopy.hardware.lightsensor import BaseLightSensorGroup, LightSensorResponse
+except ImportError:
+    BaseLightSensorGroup = BaseDevice
+    LightSensorResponse = BaseResponseDevice
+
+
 # DeviceNotFoundError is only available from 2025.1.0 onwards, so import with a safe fallback
 try:
     from psychopy.hardware.exceptions import DeviceNotConnectedError
@@ -70,7 +84,7 @@ def splitTPadMessage(message):
     return re.match(messageFormat, message).groups()
 
 
-class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
+class TPadLightSensorGroup(lightsensor.BaseLightSensorGroup):
     def __init__(self, pad, channels, threshold=None, pos=None, size=None, units=None):
         _requestedPad = pad
         # get associated tpad
@@ -78,7 +92,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # reference self in pad
         self.parent.nodes.append(self)
         # initialise base class
-        photodiode.BasePhotodiodeGroup.__init__(
+        lightsensor.BaseLightSensorGroup.__init__(
             self, channels=channels, threshold=threshold, pos=pos, size=size, units=units
         )
         # set to data collection mode
@@ -90,8 +104,8 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
         Parameters
         ----------
-        other : TPadPhotodiodeGroup, dict
-            Other TPadPhotodiodeGroup to compare against, or a dict of params (which much include
+        other : TPadLightSensorGroup, dict
+            Other TPadLightSensorGroup to compare against, or a dict of params (which much include
             `port` or `pad` as a key)
 
         Returns
@@ -116,7 +130,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['deviceName'] + "_photodiodes",
+                'deviceName': profile['deviceName'] + "_lightsensors",
                 'pad': profile['port'],
                 'channels': 2,
             })
@@ -134,7 +148,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         time.sleep(0.1)
         # get 0 or 1 according to light level
         resp = self.parent.awaitResponse(timeout=0.1)
-        # with this threshold, is the photodiode returning True?
+        # with this threshold, is the sensor returning True?
         measurement = None
         if resp is not None:
             if resp.strip() == "1":
@@ -153,7 +167,7 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
 
     def dispatchMessages(self):
         """
-        Dispatch messages from parent TPad to this photodiode group
+        Dispatch messages from parent TPad to this light sensor group
 
         Returns
         -------
@@ -192,26 +206,26 @@ class TPadPhotodiodeGroup(photodiode.BasePhotodiodeGroup):
         # assert number == str(self.number), (
         #     "TPadPhotometer {} received message intended for photometer {}: {}"
         # ).format(self.number, number, message)
-        # create PhotodiodeResponse object
-        resp = photodiode.PhotodiodeResponse(
+        # create LightSensorResponse object
+        resp = lightsensor.LightSensorResponse(
             t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
         )
 
         return resp
 
-    def findPhotodiode(self, win, channel=None, retryLimit=5):
+    def findSensor(self, win, channel=None, retryLimit=5):
         # set mode to 3
         self.parent.setMode(3)
         self.parent.pause()
         # continue as normal
-        return photodiode.BasePhotodiodeGroup.findPhotodiode(self, win, channel, retryLimit=5)
+        return lightsensor.BaseLightSensorGroup.findSensor(self, win, channel, retryLimit=5)
 
     def findThreshold(self, win, channel=None):
         # set mode to 0 and lock it so mode doesn't change during setThreshold calls
         self.parent.setMode(0)
         self.parent.lockMode()
         # continue as normal
-        resp = photodiode.BasePhotodiodeGroup.findThreshold(self, win, channel)
+        resp = lightsensor.BaseLightSensorGroup.findThreshold(self, win, channel)
         # set back to mode 3
         self.parent.unlockMode()
         self.parent.setMode(3)
@@ -316,7 +330,7 @@ class TPadButtonGroup(button.BaseButtonGroup):
         self.parent.resetTimer(clock=clock)
 
 
-class TPadVoiceKey(BaseVoiceKeyGroup):
+class TPadSoundSensorGroup(BaseSoundSensorGroup):
     def __init__(self, pad, channels=1, threshold=None):
         _requestedPad = pad
         # get associated tpad
@@ -324,7 +338,7 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
         # reference self in pad
         self.parent.nodes.append(self)
         # initialise base class
-        BaseVoiceKeyGroup.__init__(
+        BaseSoundSensorGroup.__init__(
             self, channels=channels, threshold=threshold
         )
         # set to data collection mode
@@ -336,12 +350,12 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
     def _setThreshold(self, threshold, channel=None):
         """
         Device-specific threshold setting method. This will be called by `setThreshold` and should 
-        be overloaded by child classes of BaseVoiceKey.
+        be overloaded by child classes of BaseSoundSensor.
 
         Parameters
         ----------
         threshold : int
-            Threshold at which to register a VoiceKey response, with 0 being the lowest possible 
+            Threshold at which to register a SoundSensor response, with 0 being the lowest possible 
             volume and 255 being the highest.
         channel : int
             Channel to set the threshold for (if applicable to device)
@@ -361,7 +375,7 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
         time.sleep(0.1)
         # get 0 or 1 according to light level
         resp = self.parent.awaitResponse(timeout=0.1)
-        # with this threshold, is the photodiode returning True?
+        # with this threshold, is the sensor returning True?
         measurement = None
         if resp is not None:
             if resp.strip() == "1":
@@ -399,8 +413,8 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
             state = True
         elif state == "R":
             state = False
-        # create PhotodiodeResponse object
-        resp = VoiceKeyResponse(
+        # create SoundSensorResponse object
+        resp = SoundSensorResponse(
             t=time, channel=channel-1, value=state, threshold=self.getThreshold(channel-1)
         )
 
@@ -412,8 +426,8 @@ class TPadVoiceKey(BaseVoiceKeyGroup):
 
         Parameters
         ----------
-        other : TPadPhotodiodeGroup, dict
-            Other TPadPhotodiodeGroup to compare against, or a dict of params (which much include
+        other : TPadSoundSensorGroup, dict
+            Other TPadSoundSensorGroupGroup to compare against, or a dict of params (which much include
             `port` or `pad` as a key)
 
         Returns
@@ -645,11 +659,11 @@ class TPad(sd.SerialDevice):
                     # if device is A, dispatch only to buttons
                     if device == "A" and not isinstance(node, TPadButtonGroup):
                         continue
-                    # if device is C, dispatch only to photodiodes
-                    if device == "C" and not isinstance(node, TPadPhotodiodeGroup):
+                    # if device is C, dispatch only to sensors
+                    if device == "C" and not isinstance(node, TPadLightSensorGroup):
                         continue
                     # if device is M, dispatch only to voice keys
-                    if device == "M" and not isinstance(node, TPadVoiceKey):
+                    if device == "M" and not isinstance(node, TPadSoundSensorGroup):
                         continue
                     # dispatch to node
                     message = node.parseMessage(parts)
