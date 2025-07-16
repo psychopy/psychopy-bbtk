@@ -130,7 +130,8 @@ class TPadLightSensorGroup(lightsensor.BaseLightSensorGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['deviceName'] + "_lightsensors",
+                'deviceName': f"TPadLightSensorGroup@{profile['port']}",
+                'deviceClass': "psychopy_bbtk.tpad.TPadLightSensorGroup",
                 'pad': profile['port'],
                 'channels': 2,
             })
@@ -319,7 +320,8 @@ class TPadButtonGroup(button.BaseButtonGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['deviceName'] + "_buttons",
+                'deviceName': f"TPadButtonGroup@{profile['port']}",
+                'deviceClass': "psychopy_bbtk.tpad.TPadButtonGroup",
                 'pad': profile['port'],
                 'channels': 10,
             })
@@ -452,7 +454,8 @@ class TPadSoundSensorGroup(BaseSoundSensorGroup):
         # iterate through profiles of all serial port devices
         for profile in TPad.getAvailableDevices():
             devices.append({
-                'deviceName': profile['deviceName'] + "_voicekey",
+                'deviceName': f"TPadSoundSensorGroup@{profile['port']}",
+                'deviceClass': "psychopy_bbtk.tpad.TPadSoundSensorGroup",
                 'pad': profile['port'],
                 'channels': 1,
             })
@@ -528,38 +531,23 @@ class TPad(sd.SerialDevice):
 
     @staticmethod
     def getAvailableDevices():
-        devices = []
-        if sys.platform == "win32":  
-            # iterate through profiles of all serial port devices
-            for profile in st.systemProfilerWindowsOS(
-                classid="{4d36e978-e325-11ce-bfc1-08002be10318}",
-                connected=True
-            ):
-                # skip non-bbtk profiles
-                if "BBTKTPAD" not in profile['Instance ID']:
-                    continue
-                # find "COM" in profile description
-                desc = profile['Device Description']
-                start = desc.find("COM") + 3
-                end = desc.find(")", start)
-                # if there's no reference to a COM port, skip
-                if -1 in (start, end):
-                    continue
-                # get COM port number
-                num = desc[start:end]
-    
-                devices.append({
-                    'deviceName': profile['Instance ID'],
-                    'port': f"COM{num}",
-                })
-        else:
-            for profile in sd.SerialDevice.getAvailableDevices():
-                devices.append({
-                    'deviceName': profile['deviceName'],
-                    'port': profile['port'],
-                })
+        import serial.tools.list_ports
 
-        return devices
+        profiles = []
+
+        # iterate through serial devices via pyserial
+        for device in serial.tools.list_ports.comports():
+            print(device.pid, device.vid)
+            # filter only for those which look like a tpad
+            if device.vid == 1027 and device.pid in (1000, 1001, 1002, 1003, 1004):
+                # construct profile
+                profiles.append({
+                    'deviceName': f"TPad@{device.device}",
+                    'deviceClass': "psychopy_bbtk.tpad.TPad",
+                    'port': device.device
+                })
+        
+        return profiles
 
     @classmethod
     def resolve(cls, requested):
